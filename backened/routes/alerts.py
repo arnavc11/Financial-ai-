@@ -157,7 +157,7 @@ async def _send_alert_notification(alert: dict, current_price: float):
 
     try:
         subject = f"🔔 FinAI Alert: {alert['symbol']} {alert['alert_type']} ₹{alert['target_value']:,.2f}"
-        body = f"""
+        body = f""
 FinAI Price Alert Triggered!
 
 Asset: {alert['symbol']} ({alert['asset_type']})
