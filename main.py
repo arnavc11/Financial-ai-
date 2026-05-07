@@ -12,7 +12,7 @@ from backened.database import init_db
 
 app = FastAPI(title="FinAI", description="Indian Financial Intelligence Platform", version="2.0.0")
 
-port = int(os.environ.get("port", 10000))
+port = int(os.environ.get("PORT", 10000))
 uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
