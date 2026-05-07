@@ -154,23 +154,11 @@ async def _fetch_price_for_alert(alert: dict) -> Optional[float]:
 async def _send_alert_notification(alert: dict, current_price: float):
     if not alert.get("email") or not config.SMTP_USER:
         return
-
     try:
-        subject = f"🔔 FinAI Alert: {alert['symbol']} {alert['alert_type']} ₹{alert['target_value']:,.2f}"
-        body = f"""
-FinAI Price Alert Triggered!
-
-Asset: {alert['symbol']} ({alert['asset_type']})
-Alert: {_describe_alert(alert)}
-Current Price: {current_price:,.2f}
-Triggered At: {alert['triggered_at']}
-Your Note: {alert.get('note', '-')}
-- FinAI Financial Intelligence Platform
-""" 
-    direction = "rises above" if alert["alert_type"] == "above" else "falls below"
-    
-    return f"{alert['symbol']} {direction} ₹{alert['target_value']:,.2f}"
-
-     except Exception as e:
-         print(f"Error sending alert: {e}")
-                
+        subject = f"FinAI Alert: {alert['symbol']}"
+        body = f"Price Alert Triggered for {alert['symbol']} at {current_price}"
+        print(f"--- ATTEMPTING EMAIL SEND: {subject} ---", flush=True)
+        # We will add the SMTP logic back once the port opens
+        return True
+    except Exception as e:
+        print(f"Error sending alert: {e}", flush=True)
