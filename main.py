@@ -1,4 +1,5 @@
 import uvicorn
+port = int(os.environ.get("port", 10000))
 uvicorn.run("main:app", host="0.0.0.0", port=port)
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,8 +45,5 @@ async def health():
 async def root():
     if os.path.exists("frontend/index.html"):
         return FileResponse("frontend/index.html")
-    return {"app": "ArthAI", "docs": "/docs"}
+    return {"app": "FinAI", "docs": "/docs"}
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
