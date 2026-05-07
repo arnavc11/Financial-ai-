@@ -18,17 +18,22 @@ CURRENT MARKET CONTEXT:
 {market_context}
 
 Always use Rs. for prices, Indian numbering (Lakh/Crore), and warn that this is educational only."""
-market_context = await get_market_context()
-system = ARTH_AI_SYSTEM.format(market_context=market_context)
-messages = [{"role": m.role, "content": m.content} for m in request.messages]
 
-    if request.use_anthropic and config.ANTHROPIC_API_KEY:
-        reply = await chat_with_anthropic(messages, system)
-        engine = "Anthropic Claude (paid)"
-    else:
-        model = request.model or DEFAULT_OLLAMA_MODEL
-        reply = await chat_with_ollama(messages, model, system)
-        engine = f"Ollama/{model} (free)"
+@router.post("/chat")
+async def handle_chat(request: ChatRequest):
+    
+    market_context = await get_market_context()
+    system = FIN_AI_SYSTEM.format(market_context=market_context)
+    messages = [{"role": m.role, "content": m.content} for m in request.messages]
+
+
+if request.use_anthropic and config.ANTHROPIC_API_KEY:
+     reply = await chat_with_anthropic(messages, system)
+     engine = "Anthropic Claude (paid)"
+else:
+     model = request.model or DEFAULT_OLLAMA_MODEL
+     reply = await chat_with_ollama(messages, model, system)
+     engine = f"Ollama/{model} (free)"
 
     return {"reply": reply, "engine": engine, "market_context": market_context,
             "timestamp": datetime.now().isoformat()}
