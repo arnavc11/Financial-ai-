@@ -165,8 +165,8 @@ Alert: {_describe_alert(alert)}
 Current Price: {current_price:,.2f}
 Triggered At: {alert['triggered_at']}
 Your Note: {alert.get('note', '-')}
-"""
 - FinAI Financial Intelligence Platform
+""" 
     direction = "rises above" if alert["alert_type"] == "above" else "falls below"
     
     return f"{alert['symbol']} {direction} ₹{alert['target_value']:,.2f}"
