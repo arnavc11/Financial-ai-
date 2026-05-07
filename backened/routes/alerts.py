@@ -162,7 +162,7 @@ FinAI Price Alert Triggered!
 
 Asset: {alert['symbol']} ({alert['asset_type']})
 Alert: {_describe_alert(alert)}
-Current Price: ₹{current_price:,.2f}
+Current Price: {current_price:,.2f}
 Triggered At: {alert['triggered_at']}
 Your Note: {alert.get('note', '-')}
 
