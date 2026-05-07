@@ -168,7 +168,7 @@ def get_chat_history(user_id: str, limit: int = 20) -> List[Dict]:
             FROM chat_history
             WHERE user_id=?
             ORDER BY created_at DESC
-            LIMIT ?
+            LIMIT ?""")
     with get_db() as conn:
         conn.execute("DELETE FROM chat_history WHERE user_id=?", (user_id,))
 
