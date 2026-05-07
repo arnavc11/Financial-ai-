@@ -5,10 +5,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 
-from backend.routes import stocks, crypto, rbi, mutualfunds, portfolio, alerts, news, ai_chat
-from backend.routes import charts, voice, stocks_enhanced
-from backend.scheduler import start_scheduler
-from backend.database import init_db
+from backened.routes import stocks, crypto, rbi, mutualfunds, portfolio, alerts, news, ai_chat
+from backened.routes import charts, voice, stocks_enhanced
+from backened.scheduler import start_scheduler
+from backened.database import init_db
 
 app = FastAPI(title="ArthAI", description="Indian Financial Intelligence Platform", version="2.0.0")
 
