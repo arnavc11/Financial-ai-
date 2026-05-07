@@ -27,13 +27,13 @@ async def handle_chat(request: ChatRequest):
     messages = [{"role": m.role, "content": m.content} for m in request.messages]
 
 
-if request.use_anthropic and config.ANTHROPIC_API_KEY:
-     reply = await chat_with_anthropic(messages, system)
-     engine = "Anthropic Claude (paid)"
-else:
-     model = request.model or DEFAULT_OLLAMA_MODEL
-     reply = await chat_with_ollama(messages, model, system)
-     engine = f"Ollama/{model} (free)"
+    if request.use_anthropic and config.ANTHROPIC_API_KEY:
+        reply = await chat_with_anthropic(messages, system)
+        engine = "Anthropic Claude (paid)"
+    else:
+        model = request.model or DEFAULT_OLLAMA_MODEL
+        reply = await chat_with_ollama(messages, model, system)
+        engine = f"Ollama/{model} (free)"
 
 return {"reply": reply, "engine": engine, "market_context": market_context,
             "timestamp": datetime.now().isoformat()}
