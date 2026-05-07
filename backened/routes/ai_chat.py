@@ -35,7 +35,7 @@ else:
      reply = await chat_with_ollama(messages, model, system)
      engine = f"Ollama/{model} (free)"
 
-     return {"reply": reply, "engine": engine, "market_context": market_context,
+return {"reply": reply, "engine": engine, "market_context": market_context,
             "timestamp": datetime.now().isoformat()}
 
 @router.get("/ollama-models")
