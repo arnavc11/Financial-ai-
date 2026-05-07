@@ -10,7 +10,7 @@ router = APIRouter()
 OLLAMA_BASE_URL = "http://localhost:11434"
 DEFAULT_OLLAMA_MODEL = "llama3.2"
 
-ARTH_AI_SYSTEM = """You are ArthAI, an expert AI financial assistant for Indian markets.
+Fin_AI_SYSTEM = """You are FinAI, an expert AI financial assistant for Indian markets.
 You help users understand NSE/BSE stocks, RBI policy, bonds, MSME schemes, crypto (30% tax),
 mutual funds, and the Indian economy.
 
@@ -73,7 +73,7 @@ async def explain_tokens():
             "Step 1: Download Ollama from https://ollama.com/download",
             "Step 2: Install it like a normal Windows/Mac app",
             "Step 3: Open a terminal and type: ollama pull llama3.2",
-            "Step 4: Run ArthAI: python main.py",
+            "Step 4: Run FinAI: python main.py",
             "Step 5: Chat for free forever!"
         ]
     }
@@ -97,7 +97,7 @@ async def analyze_stock(symbol: str, exchange: str = "NSE"):
         reply = await chat_with_ollama(
             messages=[{"role": "user", "content": f"Briefly analyse this Indian stock (under 150 words, include risk disclaimer): {summary}"}],
             model=DEFAULT_OLLAMA_MODEL,
-            system="You are ArthAI, Indian stock market analyst."
+            system="You are FinAI, Indian stock market analyst."
         )
         return {"symbol": symbol, "data": summary, "analysis": reply,
                 "engine": f"Ollama/{DEFAULT_OLLAMA_MODEL} (free)"}
