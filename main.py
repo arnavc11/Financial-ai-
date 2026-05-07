@@ -32,10 +32,10 @@ app.include_router(voice.router,           prefix="/api/voice",     tags=["Voice
 if os.path.exists("frontend"):
     app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
-@app.on_event("startup")
-async def startup():
-    init_db()
-    start_scheduler()
+#@app.on_event("startup")
+#async def startup():
+#    init_db()
+   # start_scheduler()
     print("ArthAI v2.0 started!")
 
 @app.get("/health")
