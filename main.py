@@ -1,6 +1,20 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+print("--- STAGE 1: BASIC IMPORTS ---", flush=True)
+from fastapi import FastAPI
+import os
+
+print("--- STAGE 2: ROUTE IMPORTS ---", flush=True)
+# Add a print before every single route import
+print("Loading stocks...", flush=True)
+from backened.routes import stocks
+print("Loading alerts...", flush=True)
+from backened.routes import alerts 
+
+print("--- STAGE 3: APP INITIALIZATION ---", flush=True)
+app = FastAPI()
+
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
