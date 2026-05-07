@@ -3,7 +3,7 @@ import httpx
 import feedparser
 from datetime import datetime
 from config.settings import config
-from backend.cache import cache
+from backened.cache import cache
 
 router = APIRouter()
 
