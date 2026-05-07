@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 import httpx
 from datetime import datetime
-from backend.cache import cache
+from backened.cache import cache
 
 router = APIRouter()
 BASE_URL = "https://api.mfapi.in/mf"
