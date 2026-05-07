@@ -2,9 +2,5 @@ services:
   - type: web
     name: financial-ai
     env: python
-    pythonVersion: "3.11.9"
-    buildCommand: pip install -r requirements.txt
-    startCommand: python main.py
-    envVars:
-      - key: PORT
-        value: 8000
+    buildCommand: pip install --upgrade pip && pip install fastapi uvicorn httpx feedparser APScheduler python-dotenv pydantic aiofiles anthropic && pip install --only-binary=:all: pandas numpy scikit-learn matplotlib && pip install yfinance
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
