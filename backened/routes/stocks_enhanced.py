@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 import yfinance as yf
 from datetime import datetime
-from backend.cache import cache
+from backened.cache import cache
 
 router = APIRouter()
 
