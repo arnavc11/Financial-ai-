@@ -5,7 +5,7 @@ import httpx
 import json
 from datetime import datetime, timedelta
 from config.settings import config
-from backend.cache import cache
+from backened.cache import cache
 
 router = APIRouter()
 
