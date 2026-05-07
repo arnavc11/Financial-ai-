@@ -17,7 +17,7 @@ mutual funds, and the Indian economy.
 CURRENT MARKET CONTEXT:
 {market_context}
 
-Always use Rs. for prices, Indian numbering (Lakh/Crore), and warn that this is educational only.
+Always use Rs. for prices, Indian numbering (Lakh/Crore), and warn that this is educational only."""
     market_context = await get_market_context()
     system = ARTH_AI_SYSTEM.format(market_context=market_context)
     messages = [{"role": m.role, "content": m.content} for m in request.messages]
