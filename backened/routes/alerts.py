@@ -169,3 +169,6 @@ Your Note: {alert.get('note', '-')}
 - FinAI Financial Intelligence Platform
     direction = "rises above" if alert["alert_type"] == "above" else "falls below"
     return f"{alert['symbol']} {direction} ₹{alert['target_value']:,.2f}"
+        except Exception as e:
+            print(f"Error sending alert: {e}")
+                
