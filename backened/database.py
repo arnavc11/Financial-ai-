@@ -142,29 +142,6 @@ def get_user_alerts(user_id: str) -> List[Dict]:
         ).fetchall()
         return [dict(r) for r in rows]
 
-def trigger_alert(alert_id: int, triggered_price: float):
-    with get_db() as conn:
-        conn.execute("""
-            UPDATE alerts
-            SET status='triggered',
-                triggered_at=datetime('now'),
-                triggered_price=?
-            WHERE id=?
-            """)
-    with get_db() as conn:
-        cursor = conn.execute(
-            "DELETE FROM alerts WHERE id=? AND user_id=?",
-            (alert_id, user_id)
-        )
-        return cursor.rowcount > 0
-
-def save_chat_message(user_id: str, role: str, content: str, model: str = None):
-    with get_db() as conn:
-        conn.execute(
-            "INSERT INTO chat_history (user_id, role, content, model_used) VALUES (?, ?, ?, ?)",
-            (user_id, role, content, model)
-        )
-
 def get_chat_history(user_id: str, limit: int = 20) -> List[Dict]:
     with get_db() as conn:
         rows = conn.execute("""
@@ -172,7 +149,13 @@ def get_chat_history(user_id: str, limit: int = 20) -> List[Dict]:
             FROM chat_history
             WHERE user_id=?
             ORDER BY created_at DESC
-            LIMIT ?""")
+            LIMIT ?
+        """, (user_id, limit)).fetchall()
+        return [dict(r) for r in rows]
+
+# Line 175 starts here...
+def add_to_watchlist(user_id: str, asset_type: str, symbol: str, name: str = None):
+
     with get_db() as conn:
         conn.execute("DELETE FROM chat_history WHERE user_id=?", (user_id,))
 
