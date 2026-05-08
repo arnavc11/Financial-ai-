@@ -86,7 +86,8 @@ def init_db():
                 name        TEXT,
                 added_at    TEXT DEFAULT (datetime('now')),
                 UNIQUE(user_id, symbol, asset_type)
-            )
+            """)
+def get_portfolios(user_id: str):
     Creates a new portfolio. Returns the portfolio's database ID.
     Also creates the user record if they don't exist yet.
     with get_db() as conn:
