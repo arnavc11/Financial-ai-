@@ -153,18 +153,12 @@ def get_chat_history(user_id: str, limit: int = 20) -> List[Dict]:
         """, (user_id, limit)).fetchall()
         return [dict(r) for r in rows]
 
-# Line 175 starts here...
-def add_to_watchlist(user_id: str, asset_type: str, symbol: str, name: str = None):
-
-    with get_db() as conn:
-        conn.execute("DELETE FROM chat_history WHERE user_id=?", (user_id,))
-
 def add_to_watchlist(user_id: str, asset_type: str, symbol: str, name: str = None):
     with get_db() as conn:
-        conn.execute(
-            "INSERT OR IGNORE INTO watchlist (user_id, asset_type, symbol, name) VALUES (?, ?, ?, ?)",
-            (user_id, asset_type, symbol, name or symbol)
-        )
+        conn.execute("""
+            INSERT OR IGNORE INTO watchlist (user_id, asset_type, symbol, name)
+            VALUES (?, ?, ?, ?)
+        """, (user_id, asset_type, symbol, name))
 
 def get_watchlist(user_id: str) -> List[Dict]:
     with get_db() as conn:
@@ -179,15 +173,4 @@ def remove_from_watchlist(user_id: str, symbol: str, asset_type: str):
         conn.execute(
             "DELETE FROM watchlist WHERE user_id=? AND symbol=? AND asset_type=?",
             (user_id, symbol, asset_type)
-        )
-
-def get_db_stats() -> Dict:
-    with get_db() as conn:
-        tables = ["users", "portfolios", "holdings", "alerts", "chat_history", "watchlist"]
-        stats = {}
-        for table in tables:
-            count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-            stats[table] = count
-        stats["db_file"] = DB_PATH
-        stats["db_size_kb"] = round(os.path.getsize(DB_PATH) / 1024, 2) if os.path.exists(DB_PATH) else 0
-        return stats
+        
