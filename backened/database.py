@@ -88,8 +88,8 @@ def init_db():
                 UNIQUE(user_id, symbol, asset_type)
             """)
 def get_portfolios(user_id: str):
-    Creates a new portfolio. Returns the portfolio's database ID.
-    Also creates the user record if they don't exist yet.
+    """Creates a new portfolio. Returns the portfolio's database ID.
+    Also creates the user record if they don't exist yet."""
     with get_db() as conn:
         rows = conn.execute(
             "SELECT * FROM portfolios WHERE user_id=? ORDER BY created_at DESC",
@@ -104,6 +104,7 @@ def add_holding(portfolio_id: int, holding: Dict) -> int:
                 (portfolio_id, asset_type, symbol, name, quantity,
                  buy_price, buy_date, exchange, notes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """)
     with get_db() as conn:
         rows = conn.execute(
             "SELECT * FROM holdings WHERE portfolio_id=? ORDER BY added_at DESC",
@@ -126,6 +127,7 @@ def create_alert(alert: Dict) -> int:
                 (user_id, asset_type, symbol, alert_type, target_value,
                  exchange, email, note)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """)
     with get_db() as conn:
         rows = conn.execute(
             "SELECT * FROM alerts WHERE status='active'"
@@ -148,6 +150,7 @@ def trigger_alert(alert_id: int, triggered_price: float):
                 triggered_at=datetime('now'),
                 triggered_price=?
             WHERE id=?
+            """)
     with get_db() as conn:
         cursor = conn.execute(
             "DELETE FROM alerts WHERE id=? AND user_id=?",
