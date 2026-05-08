@@ -173,4 +173,4 @@ def remove_from_watchlist(user_id: str, symbol: str, asset_type: str):
         conn.execute(
             "DELETE FROM watchlist WHERE user_id=? AND symbol=? AND asset_type=?",
             (user_id, symbol, asset_type)
-        
+        )
