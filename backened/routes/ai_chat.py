@@ -30,7 +30,6 @@ async def handle_chat(request: ChatRequest):
     Main chat endpoint updated to use Groq for near-instant responses.
     """
     try:
-        
         messages = [{"role": "system", "content": FIN_AI_SYSTEM}]
         for m in request.messages:
             messages.append({"role": m.role, "content": m.content})
@@ -57,7 +56,6 @@ async def analyze_stock(symbol: str, exchange: str = "NSE"):
     import yfinance as yf
     symbol = symbol.upper()
     try:
-        # Determine ticker suffix based on exchange
         ticker_symbol = f"{symbol}.NS" if exchange == "NSE" else f"{symbol}.BO"
         ticker = yf.Ticker(ticker_symbol)
         
@@ -78,7 +76,6 @@ async def analyze_stock(symbol: str, exchange: str = "NSE"):
             f"Sector: {info.get('sector','N/A')}"
         )
 
-    
         analysis_completion = client.chat.completions.create(
             model=DEFAULT_GROQ_MODEL,
             messages=[
@@ -99,7 +96,7 @@ async def analyze_stock(symbol: str, exchange: str = "NSE"):
 @router.get("/token-explainer")
 async def explain_tokens():
     """
-    endpoint blahhh blahh
+    Educational endpoint explaining AI costs.
     """
     return {
         "simple_explanation": "A TOKEN is a small piece of text - roughly one word or part of a word.",
