@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    COINGECKO_BASE_URL: str = "https://api.coingecko.com/api/v3
+    COINGECKO_BASE_URL: str = "https://api.coingecko.com/api/v3"
     
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     GROQ_MODEL: str = "llama-3.3-70b-versatile"  
