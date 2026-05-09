@@ -6,7 +6,6 @@ from fastapi import FastAPI
 import os
 
 print("--- STAGE 2: ROUTE IMPORTS ---", flush=True)
-# Add a print before every single route import
 print("Loading stocks...", flush=True)
 from backened.routes import stocks
 print("Loading alerts...", flush=True)
@@ -47,7 +46,7 @@ if os.path.exists("frontend"):
 #async def startup():
 #    init_db()
    # start_scheduler()
-    print("ArthAI v2.0 started!")
+    print("FinAI v2.0 started!")
 
 @app.get("/health")
 async def health():
