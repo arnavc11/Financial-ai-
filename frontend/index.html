@@ -109,6 +109,22 @@
       <div class="name">INFOSYS</div>
       <div class="price">₹1,421.70</div>
       <div class="change up">+2.11%</div>
+     <div class="input-row">
+  <input
+    class="chat-input"
+    id="chatInput"
+    placeholder="Ask anything about Indian markets..."
+    onkeydown="if(event.key==='Enter')sendMsg()"
+  >
+
+  <button
+    class="send-btn"
+    id="sendBtn"
+    onclick="sendMsg()"
+  >
+    Send
+  </button>
+     </div>
     </div>
   </div>
 
