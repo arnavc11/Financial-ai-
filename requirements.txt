@@ -6,7 +6,7 @@ APScheduler
 python-dotenv
 pydantic
 aiofiles
-anthropic
+groq
 pandas
 numpy
 scikit-learn
