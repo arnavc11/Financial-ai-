@@ -26,9 +26,6 @@ from backened.database import init_db
 
 app = FastAPI(title="FinAI", description="Indian Financial Intelligence Platform", version="2.0.0")
 
-port = int(os.environ.get("PORT", 10000))
-uvicorn.run("main:app", host="0.0.0.0", port=port)
-
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 app.include_router(stocks.router,          prefix="/api/stocks",    tags=["Stocks"])
@@ -61,4 +58,7 @@ async def root():
     if os.path.exists("frontend/index.html"):
         return FileResponse("frontend/index.html")
     return {"app": "FinAI", "docs": "/docs"}
-
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
