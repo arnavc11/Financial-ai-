@@ -11,7 +11,7 @@
     --gold: #f5c842; --red: #ff4d6a; --blue: #3b82f6;
     --text: #e2e8f0; --muted: #64748b; --border: #1e2d45;
   }
-  body { background: var(--dark); color: var(--text); font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+  body { background: var(--dark); color: var(--text); font-family: 'Segoe UI', sans-serif; min-height: 100; }
 
   /* HEADER */
   header { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
@@ -27,7 +27,12 @@
   @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
   /* LAYOUT */
-  .container { display: grid; grid-template-columns: 260px 1fr; height: calc(100vh - 90px); }
+.container{
+display:grid;
+grid-template-columns:300px 1fr;
+height:calc(100vh - 90px);
+overflow:hidden;
+}
 
   /* SIDEBAR */
   .sidebar { background: var(--card); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px; }
@@ -59,19 +64,42 @@
 }
 
   /* MAIN */
-  .main { display: flex; flex-direction: column; overflow: hidden; }
-
+.main{
+display:flex;
+flex-direction:column;
+height:100%;
+overflow:hidden;
+background:#041225;
+   }
   /* TABS */
   .tabs { display: flex; gap: 4px; padding: 12px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
   .tab { padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.2s; }
   .tab.active { background: var(--accent); color: var(--dark); border-color: var(--accent); }
 
   /* CONTENT */
-  .content { flex: 1; overflow-y: auto; padding: 16px; }
+.content{
+flex:1;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+padding:0;
+               }
 
   /* CHAT */
-  .chat-wrap { display: flex; flex-direction: column; height: 100%; }
-  .messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 8px; }
+  .chat-wrap{
+display:flex;
+flex-direction:column;
+height:100%;
+width:100%;
+  }
+  .messages{
+flex:1;
+overflow-y:auto;
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:14px;
+  }
   .msg { display: flex; gap: 10px; animation: fadeIn 0.3s ease; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
   .msg.user { flex-direction: row-reverse; }
@@ -162,6 +190,7 @@ color:white;
 <div class="stock-card">
   <div class="name">INFOSYS</div>
   <div class="price" id="infosysPrice">Loading...</div>
+</div>
 </div>
 
   <div class="main">
@@ -298,6 +327,57 @@ event.results[0][0].transcript;
 
 recognition.start();
  }
+ const tabs=document.querySelectorAll(".tab");
+
+tabs.forEach(tab=>{
+
+tab.addEventListener("click",()=>{
+
+tabs.forEach(t=>t.classList.remove("active"));
+
+tab.classList.add("active");
+
+});
+
+});
+ function sendMsg(){
+
+const input=document.getElementById("chatInput");
+
+const text=input.value.trim();
+
+if(!text)return;
+
+const messages=document.getElementById("messages");
+
+messages.innerHTML+=`
+<div class="msg user">
+<div class="avatar user-avatar">🧑</div>
+<div class="bubble user-bubble">${text}</div>
+</div>
+`;
+
+input.value="";
+
+messages.scrollTop=messages.scrollHeight;
+
+setTimeout(()=>{
+
+messages.innerHTML+=`
+<div class="msg">
+<div class="avatar ai-avatar">₹</div>
+<div class="bubble ai-bubble">
+FinAI received: "${text}"
+</div>
+</div>
+`;
+
+messages.scrollTop=messages.scrollHeight;
+
+},600);
+
+ }
+
 </script>
 
 </body>
