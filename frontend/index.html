@@ -85,6 +85,43 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--dark); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+ .input-row{
+display:flex;
+align-items:center;
+gap:12px;
+width:100%;
+padding:16px;
+margin-top:auto;
+background:#101827;
+border-top:1px solid #22324d;
+border-radius:18px;
+}
+
+.chat-input{
+flex:1;
+background:#081225;
+border:2px solid #00d4aa;
+border-radius:16px;
+padding:16px;
+color:white;
+font-size:15px;
+outline:none;
+}
+
+.chat-input::placeholder{
+color:#94a3b8;
+}
+
+.send-btn,.voice-btn{
+border:none;
+border-radius:14px;
+padding:14px 18px;
+cursor:pointer;
+font-weight:700;
+font-size:14px;
+background:linear-gradient(135deg,#00d4aa,#3b82f6);
+color:white;
+                }
  
 </style>
 </head>
@@ -148,20 +185,18 @@ Namaste! 🙏 I am FinAI — your intelligent financial companion for Indian mar
           </div>
         </div>
        <div class="input-row">
-  <input
-    class="chat-input"
-    id="chatInput"
-    placeholder="Ask anything about Indian markets..."
-    onkeydown="if(event.key==='Enter')sendMsg()"
-  >
 
-  <button
-    class="send-btn"
-    id="sendBtn"
-    onclick="sendMsg()"
-  >
-    Send
-  </button>
+<input
+class="chat-input"
+id="chatInput"
+placeholder="Ask anything about Indian markets..."
+onkeydown="if(event.key==='Enter')sendMsg()"
+/>
+
+<button class="voice-btn" onclick="startVoice()">🎤</button>
+
+<button class="send-btn" onclick="sendMsg()">Send</button>
+
        </div>
       </div>
     </div>
@@ -248,7 +283,21 @@ loadStocks();
 
 setInterval(loadMarketData, 30000);
 setInterval(loadStocks, 30000);
+function startVoice(){
 
+const recognition =
+new(window.SpeechRecognition||
+window.webkitSpeechRecognition)();
+
+recognition.lang="en-IN";
+
+recognition.onresult=function(event){
+document.getElementById("chatInput").value=
+event.results[0][0].transcript;
+};
+
+recognition.start();
+ }
 </script>
 
 </body>
