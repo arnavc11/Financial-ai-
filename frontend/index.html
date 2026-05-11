@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fin — Indian Financial Intelligence</title>
+<title>Finai — Indian Financial Intelligence</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -113,23 +113,19 @@
     <h3>NSE Stocks</h3>
 
     <div class="stock-card">
-      <div class="name">RELIANCE</div>
-      <div class="price">₹2,847.30</div>
-      <div class="change up">+1.24%</div>
-    </div>
+  <div class="name">RELIANCE</div>
+  <div class="price" id="reliancePrice">Loading...</div>
+</div>
 
-    <div class="stock-card">
-      <div class="name">TCS</div>
-      <div class="price">₹3,612.15</div>
-      <div class="change up">+0.87%</div>
-    </div>
+<div class="stock-card">
+  <div class="name">TCS</div>
+  <div class="price" id="tcsPrice">Loading...</div>
+</div>
 
-    <div class="stock-card">
-      <div class="name">INFOSYS</div>
-      <div class="price">₹1,421.70</div>
-      <div class="change up">+2.11%</div>
-     <div class="input-row"></div>
-  </div>
+<div class="stock-card">
+  <div class="name">INFOSYS</div>
+  <div class="price" id="infosysPrice">Loading...</div>
+</div>
 
   <div class="main">
     <div class="tabs">
@@ -174,13 +170,85 @@ Namaste! 🙏 I am FinAI — your intelligent financial companion for Indian mar
 </div>
 
 <script>
+
 console.log("FinAI Loaded");
 
-const tickerData =
-'NIFTY 50: 22,147 ▲0.84% • SENSEX: 73,088 ▲0.76% • BTC/INR: ₹74.2L ▲3.45%';
+async function loadMarketData() {
 
-document.getElementById('ticker').textContent =
-tickerData + " • " + tickerData;
+  try {
+
+    const nifty = await fetch(
+      "https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI"
+    ).then(r => r.json());
+
+    const sensex = await fetch(
+      "https://query1.finance.yahoo.com/v8/finance/chart/%5EBSESN"
+    ).then(r => r.json());
+
+    const btc = await fetch(
+      "https://api.coindesk.com/v1/bpi/currentprice/INR.json"
+    ).then(r => r.json());
+
+    const niftyPrice =
+      nifty.chart.result[0].meta.regularMarketPrice;
+
+    const sensexPrice =
+      sensex.chart.result[0].meta.regularMarketPrice;
+
+    const btcPrice =
+      btc.bpi.INR.rate;
+
+    document.getElementById("ticker").textContent =
+      `NIFTY 50: ${niftyPrice} • SENSEX: ${sensexPrice} • BTC/INR: ₹${btcPrice}`;
+
+  } catch (err) {
+
+    document.getElementById("ticker").textContent =
+      "Live market data unavailable";
+
+    console.error(err);
+  }
+}
+
+async function loadStocks() {
+
+  const stocks = {
+    reliance: "RELIANCE.NS",
+    tcs: "TCS.NS",
+    infosys: "INFY.NS"
+  };
+
+  for (const key in stocks) {
+
+    try {
+
+      const res = await fetch(
+        `https://query1.finance.yahoo.com/v8/finance/chart/${stocks[key]}`
+      );
+
+      const data = await res.json();
+
+      const price =
+        data.chart.result[0].meta.regularMarketPrice;
+
+      document.getElementById(
+        key + "Price"
+      ).textContent = "₹" + price;
+
+    } catch (e) {
+
+      console.log(e);
+
+    }
+  }
+}
+
+loadMarketData();
+loadStocks();
+
+setInterval(loadMarketData, 30000);
+setInterval(loadStocks, 30000);
+
 </script>
 
 </body>
