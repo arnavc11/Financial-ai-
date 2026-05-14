@@ -236,7 +236,7 @@ What would you like to know today?</div>
       <div class="msg" style="margin-bottom:12px;">
         <div class="avatar ai-av">₹</div>
         <div class="bubble ai-bubble" id="cryptoGreeting">Hey! Welcome to Crypto section. Let me fetch live prices for you in Indian Rupees... 🚀</div>
-      </div>
+         </div>
       <div class="crypto-grid" id="cryptoGrid">
         <div class="crypto-card"><div class="coin-name">₿ Bitcoin</div><div class="coin-price" id="btcPrice">Loading...</div><div class="coin-chg" id="btcChg"></div><div class="tax-note">🇮🇳 30% flat tax on profits + 1% TDS above ₹10,000</div></div>
         <div class="crypto-card"><div class="coin-name">Ξ Ethereum</div><div class="coin-price" id="ethPrice">Loading...</div><div class="coin-chg" id="ethChg"></div><div class="tax-note">🇮🇳 30% flat tax on profits + 1% TDS above ₹10,000</div></div>
@@ -289,8 +289,8 @@ What would you like to know today?</div>
     <div class="content" id="tab-sip">
       <div class="msg" style="margin-bottom:12px;">
         <div class="avatar ai-av">₹</div>
-        <div class="bubble ai-bubble" id="sipGreeting">Hey! Welcome to the SIP Calculator. 💰 Enter your monthly amount below and I'll show you how much wealth you can build. Remember - start early, even with small amounts!</div>
-           </div>
+        <div class="bubble ai-bubble" id="sipGreeting">Hey! Welcome to the SIP Calculator. 💰 Enter your monthly amount below and I'll show you how much wealth you can build. Remember — start early, even with small amounts!</div>
+      </div>
       <div class="sip-form">
         <div class="form-row">
           <div class="form-group"><label>Monthly SIP (₹)</label><input type="number" id="sipAmt" value="5000" min="100"></div>
@@ -471,7 +471,7 @@ function addMessage(role, text) {
 
 function showTyping() {
   const msgs = document.getElementById('messages');
- const div = document.createElement('div');
+  const div = document.createElement('div');
   div.className = 'msg';
   div.id = 'typing-indicator';
   div.innerHTML = `<div class="avatar ai-av">₹</div><div class="bubble ai-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
@@ -653,7 +653,7 @@ async function analyseStock() {
   res.innerHTML = '<span style="color:var(--muted)">⏳ Fetching data for ' + sym + '...</span>';
   try {
     const r = await fetch('/api/stocks/quote/' + sym);
-   const d = await r.json();
+    const d = await r.json();
     if (d.error) { res.innerHTML = '<span style="color:var(--red)">Could not find ' + sym + '. Try NSE symbol like RELIANCE, TCS, HDFCBANK</span>'; return; }
     res.innerHTML = `<b style="color:var(--accent)">${sym}</b> — ₹${d.current_price?.toLocaleString('en-IN')} <span class="${d.direction === 'up' ? 'up' : 'down'}">${d.direction === 'up' ? '▲ +' : '▼ '}${d.change_pct}%</span><br>52W High: ₹${d['52w_high']?.toLocaleString('en-IN')} | 52W Low: ₹${d['52w_low']?.toLocaleString('en-IN')}`;
     askAndGoChat('Analyse ' + sym + ' NSE stock. Current price is Rs.' + d.current_price + '. Should I buy, sell or hold? Explain simply in ' + currentLang + '.');
@@ -738,4 +738,310 @@ calcSIP();
 </body>
 </html>
 
- 
+<!-- ============================================================ -->
+<!-- ADD THESE 2 TABS TO YOUR EXISTING index.html                 -->
+<!-- ============================================================ -->
+
+<!-- STEP 1: Add these 2 buttons inside your .tabs div -->
+<!--
+<button class="tab" onclick="switchTab('health',this)">🏥 Health Score</button>
+<button class="tab" onclick="switchTab('upi',this)">💳 UPI Analyzer</button>
+-->
+
+<!-- STEP 2: Add this CSS inside your <style> tag -->
+<style>
+.score-ring{width:140px;height:140px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:0 auto 16px;border:8px solid var(--border);position:relative;}
+.score-num{font-size:36px;font-weight:800;font-family:'Space Mono',monospace;}
+.score-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.breakdown-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.breakdown-row:last-child{border-bottom:none;}
+.breakdown-bar{flex:1;height:8px;background:var(--surface);border-radius:4px;overflow:hidden;}
+.breakdown-fill{height:100%;border-radius:4px;background:var(--accent);transition:width 0.5s ease;}
+.breakdown-name{font-size:11px;color:var(--muted);min-width:100px;}
+.breakdown-score{font-size:11px;font-family:'Space Mono',monospace;color:var(--text);min-width:50px;text-align:right;}
+.tip-item{background:var(--surface);border-left:3px solid var(--gold);padding:10px 12px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:12px;color:var(--text);line-height:1.7;}
+.upi-cat{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.upi-cat:last-child{border-bottom:none;}
+.upi-bar-wrap{flex:1;height:8px;background:var(--surface);border-radius:4px;overflow:hidden;}
+.upi-bar{height:100%;border-radius:4px;background:var(--accent);}
+.upi-catname{font-size:12px;color:var(--text);min-width:110px;}
+.upi-amt{font-size:11px;font-family:'Space Mono',monospace;color:var(--gold);min-width:80px;text-align:right;}
+.upi-pct{font-size:10px;color:var(--muted);min-width:35px;text-align:right;}
+.waste-card{background:rgba(255,68,102,0.08);border:1px solid rgba(255,68,102,0.25);border-radius:10px;padding:12px;margin-bottom:8px;}
+.invest-card{background:rgba(0,229,170,0.08);border:1px solid rgba(0,229,170,0.25);border-radius:10px;padding:12px;margin-bottom:8px;}
+</style>
+
+<!-- STEP 3: Add these tab content divs -->
+
+<!-- FINANCIAL HEALTH SCORE TAB -->
+<div class="content" id="tab-health">
+  <div class="msg" style="margin-bottom:12px;">
+    <div class="avatar ai-av">₹</div>
+    <div class="bubble ai-bubble" id="healthGreeting">Hey! 🏥 Welcome to FinAI Financial Health Score — like a CIBIL score but for your COMPLETE financial health! Answer 10 simple questions and I'll score you out of 100 and tell you exactly what to fix.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <h3>Your Financial Details</h3>
+    <div class="form-row">
+      <div class="form-group"><label>Monthly Income (₹)</label><input type="number" id="hIncome" placeholder="e.g. 50000"></div>
+      <div class="form-group"><label>Monthly Savings (₹)</label><input type="number" id="hSavings" placeholder="e.g. 10000"></div>
+      <div class="form-group"><label>Monthly Investments (₹)</label><input type="number" id="hInvest" placeholder="e.g. 5000"></div>
+    </div>
+    <div class="form-row">
+       <div class="form-group"><label>Monthly EMI (₹)</label><input type="number" id="hEmi" placeholder="0 if no loans"></div>
+      <div class="form-group"><label>Emergency Fund (months)</label><input type="number" id="hEmFund" placeholder="0 if none" min="0" max="24"></div>
+      <div class="form-group"><label>Your Age</label><input type="number" id="hAge" placeholder="e.g. 25"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:var(--surface);padding:10px;border-radius:8px;border:1px solid var(--border);">
+        <input type="checkbox" id="hHealth" style="width:16px;height:16px;accent-color:var(--accent);">
+        <span>I have Health Insurance</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:var(--surface);padding:10px;border-radius:8px;border:1px solid var(--border);">
+        <input type="checkbox" id="hTerm" style="width:16px;height:16px;accent-color:var(--accent);">
+        <span>I have Term Insurance</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:var(--surface);padding:10px;border-radius:8px;border:1px solid var(--border);">
+        <input type="checkbox" id="hEmergency" style="width:16px;height:16px;accent-color:var(--accent);">
+        <span>I have Emergency Fund</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:var(--surface);padding:10px;border-radius:8px;border:1px solid var(--border);">
+        <input type="checkbox" id="hRetire" style="width:16px;height:16px;accent-color:var(--accent);">
+        <span>I have Retirement Plan (NPS/PPF)</span>
+      </label>
+    </div>
+    <button class="btn-calc" onclick="calcHealthScore()" style="width:100%;">Calculate My Financial Health Score 🏥</button>
+  </div>
+
+  <div id="healthResult" style="display:none;">
+    <div class="card" style="text-align:center;margin-bottom:14px;">
+      <div class="score-ring" id="scoreRing">
+        <div class="score-num" id="scoreNum">--</div>
+        <div class="score-lbl">out of 100</div>
+      </div>
+      <div style="font-size:18px;font-weight:800;margin-bottom:6px;" id="scoreRating"></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px;" id="scorePercentile"></div>
+      <div style="font-size:13px;line-height:1.7;" id="scoreSummary"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <h3>Score Breakdown</h3>
+      <div id="breakdownList"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <h3>🎯 Your Action Plan</h3>
+      <div id="tipsList"></div>
+      <div id="aiPlan" style="margin-top:10px;padding:12px;background:var(--surface);border-radius:8px;font-size:12px;color:var(--text);line-height:1.8;border-left:3px solid var(--accent);display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- UPI BUDGET ANALYZER TAB -->
+<div class="content" id="tab-upi">
+  <div class="msg" style="margin-bottom:12px;">
+    <div class="avatar ai-av">₹</div>
+    <div class="bubble ai-bubble" id="upiGreeting">Hey! 💳 Welcome to the UPI Budget Analyzer! Paste your bank statement or UPI transaction history below and I'll find where your money is going — and how much you're wasting! This works with any Indian bank statement.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <h3>Paste Your Transactions</h3>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Copy transactions from PhonePe, GPay, Paytm, or your bank app and paste here. Each transaction on a new line.</p>
+    <textarea id="upiText" rows="8" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;resize:vertical;outline:none;" placeholder="Example:
+Swiggy food order Rs.450
+Zomato pizza delivery 320
+Ola cab to office 180
+Amazon shopping 1250
+Netflix subscription 499
+Electricity bill 850
+Salary credited 45000
+Zerodha SIP 3000
+Petrol 500
+BigBasket grocery 1200"></textarea>
+    <div style="display:flex;gap:10px;margin-top:10px;align-items:center;">
+      <div class="form-group" style="flex:1;margin:0;">
+        <label style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:5px;">Monthly Income (optional)</label>
+        <input type="number" id="upiIncome" placeholder="e.g. 50000" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-size:13px;">
+      </div>
+      <button class="btn-calc" onclick="analyzeUPI()" style="margin-top:18px;">Analyse Spending 🔍</button>
+    </div>
+  </div>
+
+  <div id="upiResult" style="display:none;">
+    <div class="metric-row" style="margin-bottom:14px;">
+      <div class="metric"><div class="metric-val" id="upiTotal">-</div><div class="metric-lbl">Total Spent</div></div>
+      <div class="metric"><div class="metric-val" id="upiTxns">-</div><div class="metric-lbl">Transactions</div></div>
+      <div class="metric"><div class="metric-val" id="upiTop">-</div><div class="metric-lbl">Biggest Category</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <h3>Spending Breakdown</h3>
+      <div id="upiBreakdown"></div>
+    </div>
+
+    <div id="upiWaste" style="display:none;" class="card" style="margin-bottom:14px;">
+      <h3>⚠️ Wasteful Spending Found</h3>
+      <div id="upiWasteList"></div>
+    </div>
+
+    <div id="upiInvestSection" style="display:none;" class="card" style="margin-bottom:14px;">
+      <h3>🚀 What If You Invested Instead?</h3>
+      <div id="upiInvestList"></div>
+    </div>
+
+    <div id="upiAiTips" style="display:none;" class="card">
+      <h3>💡 AI Money-Saving Tips</h3>
+      <div id="upiAiContent" style="font-size:13px;line-height:1.8;color:var(--text);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 4: Add this JavaScript -->
+<script>
+// ── Financial Health Score ─────────────────────────────────────────
+async function calcHealthScore() {
+  const income = parseFloat(document.getElementById('hIncome').value) || 0;
+  const savings = parseFloat(document.getElementById('hSavings').value) || 0;
+  const invest = parseFloat(document.getElementById('hInvest').value) || 0;
+  const emi = parseFloat(document.getElementById('hEmi').value) || 0;
+  const emFund = parseFloat(document.getElementById('hEmFund').value) || 0;
+  const age = parseInt(document.getElementById('hAge').value) || 25;
+  const hasHealth = document.getElementById('hHealth').checked;
+  const hasTerm = document.getElementById('hTerm').checked;
+  const hasEmergency = document.getElementById('hEmergency').checked;
+  const hasRetire = document.getElementById('hRetire').checked;
+
+  if (!income) { alert('Please enter your monthly income!'); return; }
+
+  const btn = document.querySelector('#tab-health .btn-calc');
+  btn.textContent = 'Calculating...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/financial-health-score', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        monthly_income: income, monthly_savings: savings,
+        monthly_investments: invest, monthly_emi: emi,
+        has_emergency_fund: hasEmergency, emergency_fund_months: emFund,
+        has_health_insurance: hasHealth, has_term_insurance: hasTerm,
+        total_debt: 0, age: age, has_retirement_plan: hasRetire
+      })
+    });
+    const data = await res.json();
+
+    document.getElementById('healthResult').style.display = 'block';
+    document.getElementById('scoreNum').textContent = data.score;
+    document.getElementById('scoreNum').style.color = data.color;
+    document.getElementById('scoreRing').style.borderColor = data.color;
+    document.getElementById('scoreRating').textContent = data.rating;
+    document.getElementById('scoreRating').style.color = data.color;
+    document.getElementById('scorePercentile').textContent = data.percentile + ' of Indians';
+    document.getElementById('scoreSummary').textContent = data.summary;
+
+    // Breakdown
+    const bl = document.getElementById('breakdownList');
+    bl.innerHTML = Object.entries(data.breakdown).map(([key, val]) => {
+      const pct = (val.score / val.max) * 100;
+      const name = key.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+      return `<div class="breakdown-row">
+        <div class="breakdown-name">${name}</div>
+        <div class="breakdown-bar"><div class="breakdown-fill" style="width:${pct}%;background:${pct>=70?'var(--accent)':pct>=40?'var(--gold)':'var(--red)'}"></div></div>
+        <div class="breakdown-score">${val.score}/${val.max}</div>
+      </div>`;
+    }).join('');
+
+    // Tips
+    const tl = document.getElementById('tipsList');
+    tl.innerHTML = data.action_tips.map(t => `<div class="tip-item">💡 ${t}</div>`).join('') ||
+      '<div style="color:var(--accent);font-size:13px;">✅ No major issues found! Your finances are in great shape.</div>';
+
+    if (data.ai_action_plan) {
+      const ap = document.getElementById('aiPlan');
+      ap.style.display = 'block';
+      ap.innerHTML = '<b style="color:var(--accent)">🤖 AI Action Plan:</b><br>' + data.ai_action_plan;
+    }
+
+    document.getElementById('healthResult').scrollIntoView({behavior:'smooth'});
+  } catch(e) {
+    alert('Error calculating score. Please check all fields and try again.');
+  }
+  btn.textContent = 'Calculate My Financial Health Score 🏥';
+  btn.disabled = false;
+}
+
+// ── UPI Analyzer ──────────────────────────────────────────────────
+async function analyzeUPI() {
+  const text = document.getElementById('upiText').value.trim();
+  const income = parseFloat(document.getElementById('upiIncome').value) || 0;
+  if (!text) { alert('Please paste your transactions first!'); return; }
+
+  const btn = document.querySelector('#tab-upi .btn-calc');
+  btn.textContent = 'Analysing...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/upi-analyzer', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ transactions_text: text, monthly_income: income })
+    });
+    const data = await res.json();
+
+    if (data.error) { alert(data.error); btn.textContent = 'Analyse Spending 🔍'; btn.disabled = false; return; }
+
+    document.getElementById('upiResult').style.display = 'block';
+    document.getElementById('upiTotal').textContent = data.total_spent_formatted;
+    document.getElementById('upiTxns').textContent = data.transactions_found;
+    document.getElementById('upiTop').textContent = data.biggest_expense;
+
+    // Breakdown bars
+    const maxAmt = data.category_breakdown[0]?.amount || 1;
+    document.getElementById('upiBreakdown').innerHTML = data.category_breakdown.map(c => `
+      <div class="upi-cat">
+        <div class="upi-catname">${c.category}</div>
+        <div class="upi-bar-wrap"><div class="upi-bar" style="width:${(c.amount/maxAmt)*100}%;background:${c.percentage>25?'var(--red)':c.percentage>15?'var(--gold)':'var(--accent)'}"></div></div>
+        <div class="upi-amt">${c.formatted}</div>
+        <div class="upi-pct">${c.percentage}%</div>
+      </div>`).join('');
+
+    // Wasteful spending
+    if (data.wasteful_spending?.length > 0) {
+      document.getElementById('upiWaste').style.display = 'block';
+      document.getElementById('upiWasteList').innerHTML = data.wasteful_spending.map(w =>
+        `<div class="waste-card"><b style="color:var(--red)">${w.category}</b> — ${w.formatted || 'Rs.'+w.amount.toLocaleString('en-IN')} (${w.percentage}%)<br><span style="font-size:12px;color:var(--muted)">${w.suggestion}</span></div>`
+      ).join('');
+    }
+
+    // Investment insights
+    if (data.investment_insights?.length > 0) {
+      document.getElementById('upiInvestSection').style.display = 'block';
+      document.getElementById('upiInvestList').innerHTML = data.investment_insights.map(i =>
+        `<div class="invest-card" style="font-size:12px;line-height:1.8;color:var(--text)">🚀 ${i.message}</div>`
+      ).join('');
+    }
+
+    // AI tips
+    if (data.ai_money_tips) {
+      document.getElementById('upiAiTips').style.display = 'block';
+      document.getElementById('upiAiContent').textContent = data.ai_money_tips;
+    }
+
+    document.getElementById('upiResult').scrollIntoView({behavior:'smooth'});
+  } catch(e) {
+    alert('Error analysing transactions. Please try again.');
+  }
+  btn.textContent = 'Analyse Spending 🔍';
+  btn.disabled = false;
+}
+
+// Add greeting for new tabs to TAB_GREETINGS
+if (typeof TAB_GREETINGS !== 'undefined') {
+  TAB_GREETINGS['health'] = "Hey! 🏥 I will score your complete financial health out of 100 — savings, investments, insurance, emergency fund, retirement. Answer the questions below and get your personalised action plan!";
+  TAB_GREETINGS['upi'] = "Hey! 💳 Paste your UPI or bank transactions below and I will tell you exactly where your money is going and how much you can save!";
+}
+calcSIP():     
+</script>
+</body>
+</html>
