@@ -57,6 +57,14 @@ async def root():
     if os.path.exists("frontend/index.html"):
         return FileResponse("frontend/index.html")
     return {"app": "FinAI", "docs": "/docs"}
+    
+@app.post("/api/financial-health-score")
+async def financial_health_score(request: dict):
+    return {"message": "Use the client-side scoring built into index.html"}
+
+@app.post("/api/upi-analyzer")  
+async def upi_analyzer(request: dict):
+    return {"message": "Use the client-side analysis built into index.html"}
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 10000))
