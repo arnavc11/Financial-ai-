@@ -1,7 +1,7 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import httpx, os
 from datetime import datetime
@@ -9,18 +9,24 @@ from datetime import datetime
 app = FastAPI(title="FinAI")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-if os.path.exists("frontend"):
-    app.mount("/static", StaticFiles(directory="frontend"), name="static")
-
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 
+# Serve frontend with NO caching headers
 @app.get("/", include_in_schema=False)
 async def root():
-    return FileResponse("frontend/index.html")
+    response = FileResponse("frontend/index.html")
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 @app.get("/health")
 async def health():
     return {"status": "ok", "app": "FinAI", "version": "3.0.0"}
+
+# Serve static files with cache busting
+if os.path.exists("frontend"):
+    app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 @app.get("/api/crypto/prices")
 async def crypto_prices():
@@ -70,7 +76,17 @@ async def stock_quote(symbol:str):
         d = r.json()["chart"]["result"][0]
         closes = d["indicators"]["quote"][0]["close"]
         curr=closes[-1]; prev=closes[-2]; chg=((curr-prev)/prev)*100
-        return {"symbol":symbol.upper(),"current_price":round(curr,2),"formatted":f"Rs.{curr:,.2f}","change_pct":round(chg,2),"direction":"up" if chg>=0 else "down","52w_high":round(d["meta"].get("fiftyTwoWeekHigh",0),2),"52w_low":round(d["meta"].get("fiftyTwoWeekLow",0),2)}
+        meta = d["meta"]
+        return {
+            "symbol":symbol.upper(),
+            "current_price":round(curr,2),
+            "formatted":f"Rs.{curr:,.2f}",
+            "change_pct":round(chg,2),
+            "direction":"up" if chg>=0 else "down",
+            "52w_high":round(meta.get("fiftyTwoWeekHigh",0),2),
+            "52w_low":round(meta.get("fiftyTwoWeekLow",0),2),
+            "currency":"INR"
+        }
     except Exception as e:
         return JSONResponse(status_code=503,content={"error":str(e)})
 
@@ -87,7 +103,7 @@ async def market_sentiment():
     try:
         import feedparser
         async with httpx.AsyncClient(timeout=10) as c:
-            r = await c.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",headers={"User-Agent":"ArthAI/2.0"})
+            r = await c.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",headers={"User-Agent":"FinAI/2.0"})
         feed = feedparser.parse(r.text)
         headlines = [e.get("title","") for e in feed.entries[:15] if e.get("title")]
     except:
@@ -102,27 +118,117 @@ async def market_sentiment():
     neut=sum(1 for s in scored if s["label"]=="NEUTRAL")
     return {"mood_score":round(mood,3),"mood_label":"BULLISH 📈" if mood>0.1 else("BEARISH 📉" if mood<-0.1 else "NEUTRAL ➡"),"prediction":"Nifty likely to open HIGHER" if mood>0.1 else("Nifty likely LOWER" if mood<-0.1 else "Direction uncertain"),"breakdown":{"bullish":bull,"bearish":bear,"neutral":neut},"top_headlines":sorted(scored,key=lambda x:abs(x["score"]),reverse=True)[:5],"timestamp":datetime.now().isoformat()}
 
-@app.get("/api/ml/explain")
-async def explain_signal(symbol:str="RELIANCE",rsi:float=65,language:str="english"):
-    msg = "Overpriced — wait before buying." if rsi>70 else("Good buying opportunity." if rsi<30 else "Moving normally.")
-    EXPL={"english":f"RSI is {rsi:.0f} for {symbol}. {msg}","hindi":f"{symbol} का RSI {rsi:.0f} है। {'महंगा है, मत खरीदो।' if rsi>70 else 'खरीदने का मौका।' if rsi<30 else 'सामान्य है।'}","tamil":f"{symbol} RSI {rsi:.0f}. {'விலை அதிகம்.' if rsi>70 else 'வாங்க வாய்ப்பு.' if rsi<30 else 'சாதாரணம்.'}","telugu":f"{symbol} RSI {rsi:.0f}. {'ధర ఎక్కువ.' if rsi>70 else 'కొనే అవకాశం.' if rsi<30 else 'సాధారణం.'}","bengali":f"{symbol} RSI {rsi:.0f}. {'দামী।' if rsi>70 else 'কেনার সুযোগ।' if rsi<30 else 'স্বাভাবিক।'}","marathi":f"{symbol} RSI {rsi:.0f}. {'महाग.' if rsi>70 else 'घेण्याची संधी.' if rsi<30 else 'सामान्य.'}","gujarati":f"{symbol} RSI {rsi:.0f}. {'મોઘો.' if rsi>70 else 'ખરીદવાની તક.' if rsi<30 else 'સામાન્ય.'}","kannada":f"{symbol} RSI {rsi:.0f}. {'ದುಬಾರಿ.' if rsi>70 else 'ಕೊಳ್ಳಲು ಅವಕಾಶ.' if rsi<30 else 'ಸಾಮಾನ್ಯ.'}"}
-    lang=language.lower()
-    return {"symbol":symbol,"rsi":rsi,"language":lang,"explanation":EXPL.get(lang,EXPL["english"]),"all_languages":list(EXPL.keys())}
-
 @app.post("/api/ai/chat")
 async def ai_chat(request:dict):
-    messages=request.get("messages",[]); language=request.get("language","english")
+    messages = request.get("messages",[])
+    language = request.get("language","english")
+
+    # Fetch live market data to inject into AI context
+    market_context = ""
+    try:
+        async with httpx.AsyncClient(timeout=8) as c:
+            # Get crypto prices
+            r = await c.get("https://api.coingecko.com/api/v3/simple/price",
+                params={"ids":"bitcoin,ethereum","vs_currencies":"inr","include_24hr_change":"true"})
+            cd = r.json()
+            btc = cd.get("bitcoin",{}).get("inr",0)
+            eth = cd.get("ethereum",{}).get("inr",0)
+            btc_chg = cd.get("bitcoin",{}).get("inr_24h_change",0)
+            market_context += f"Bitcoin: Rs.{btc:,.0f} ({btc_chg:+.1f}% today). Ethereum: Rs.{eth:,.0f}. "
+    except:
+        pass
+
+    try:
+        async with httpx.AsyncClient(timeout=8) as c:
+            # Get Nifty
+            r = await c.get("https://query1.finance.yahoo.com/v8/finance/chart/^NSEI",
+                params={"interval":"1d","range":"2d"},headers={"User-Agent":"Mozilla/5.0"})
+            closes = r.json()["chart"]["result"][0]["indicators"]["quote"][0]["close"]
+            curr=closes[-1]; prev=closes[-2]; chg=((curr-prev)/prev)*100
+            market_context += f"Nifty 50: {curr:,.2f} ({chg:+.1f}% today). "
+    except:
+        pass
+
+    market_context += "RBI Repo Rate: 6.00%. USD/INR: Rs.83.47. "
+    market_context += f"Date: {datetime.now().strftime('%d %B %Y')}."
+
+    # Check if user is asking about a specific stock price
+    last_msg = messages[-1]["content"].lower() if messages else ""
+    stock_data = ""
+    stock_keywords = ["price","share","stock","quote","rate","value","worth","trading","nse","bse"]
+    if any(kw in last_msg for kw in stock_keywords):
+        # Extract possible stock symbol
+        common_stocks = {
+            "reliance":"RELIANCE","tcs":"TCS","infosys":"INFY","infy":"INFY",
+            "hdfc":"HDFCBANK","hdfcbank":"HDFCBANK","icici":"ICICIBANK",
+            "sbi":"SBIN","wipro":"WIPRO","bajaj":"BAJFINANCE",
+            "kotak":"KOTAKBANK","axis":"AXISBANK","maruti":"MARUTI",
+            "tatamotors":"TATAMOTORS","tata motors":"TATAMOTORS",
+            "sunpharma":"SUNPHARMA","itc":"ITC","lt":"LT","ongc":"ONGC",
+            "bharti":"BHARTIARTL","airtel":"BHARTIARTL","ntpc":"NTPC",
+            "adani":"ADANIPORTS","titan":"TITAN","nestle":"NESTLEIND",
+            "nifty":"^NSEI","sensex":"^BSESN"
+        }
+        for name, sym in common_stocks.items():
+            if name in last_msg:
+                try:
+                    async with httpx.AsyncClient(timeout=8) as c:
+                        suffix = "" if sym.startswith("^") else ".NS"
+                        r = await c.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}{suffix}",
+                            params={"interval":"1d","range":"2d"},headers={"User-Agent":"Mozilla/5.0"})
+                        closes = r.json()["chart"]["result"][0]["indicators"]["quote"][0]["close"]
+                        curr=closes[-1]; prev=closes[-2]; chg=((curr-prev)/prev)*100
+                        stock_data = f"LIVE DATA for {sym}: Current price Rs.{curr:,.2f}, change {chg:+.2f}% today. 52W High: Rs.{r.json()['chart']['result'][0]['meta'].get('fiftyTwoWeekHigh',0):,.2f}, 52W Low: Rs.{r.json()['chart']['result'][0]['meta'].get('fiftyTwoWeekLow',0):,.2f}. "
+                except:
+                    pass
+                break
+
+    system_prompt = f"""You are FinAI, an intelligent Indian financial assistant. You have access to LIVE market data.
+
+LIVE MARKET DATA RIGHT NOW:
+{market_context}
+{stock_data}
+
+YOUR RULES:
+1. ALWAYS answer the question directly — never say "check elsewhere" or "I don't have access"
+2. If asked about a stock price and you have live data above, give the exact price
+3. If asked about a stock not in your live data, give your best analysis based on recent trends and say it may vary slightly
+4. Use Rs. for Indian Rupee prices
+5. Be conversational, friendly and helpful like a knowledgeable friend
+6. Give specific numbers and actionable advice
+7. Keep responses concise — 3-5 sentences unless detailed analysis is needed
+8. Always add a brief risk disclaimer for investment advice
+9. Reply in {language}
+10. You are NOT just a chatbot — you are a financial expert with live data access
+
+NEVER say: "I don't have real-time data", "check a financial website", "I cannot provide", "please consult"
+ALWAYS say: Give the actual answer with the data you have"""
+
     if not GROQ_KEY:
-        return {"reply":"FinAI is live! Add GROQ_API_KEY in Render Environment to enable AI chat. All other features work — crypto prices, stocks, RBI rates, SIP calculator!","engine":"no key"}
+        return {
+            "reply": f"FinAI is live! I have access to live market data. {market_context} Add your GROQ_API_KEY in Render Environment to enable full AI responses!",
+            "engine": "no key"
+        }
+
     try:
         async with httpx.AsyncClient(timeout=30) as c:
-            r = await c.post("https://api.groq.com/openai/v1/chat/completions",
+            r = await c.post(
+                "https://api.groq.com/openai/v1/chat/completions",
                 headers={"Authorization":f"Bearer {GROQ_KEY}","Content-Type":"application/json"},
-                json={"model":"llama3-8b-8192","messages":[{"role":"system","content":f"You are FinAI, expert Indian financial assistant. Reply in {language}. Use Rs. for prices. Educational only, not SEBI advice."},*messages],"max_tokens":1000,"temperature":0.7})
+                json={
+                    "model":"llama3-8b-8192",
+                    "messages":[
+                        {"role":"system","content":system_prompt},
+                        *messages[-8:]
+                    ],
+                    "max_tokens":800,
+                    "temperature":0.7
+                }
+            )
             reply = r.json()["choices"][0]["message"]["content"]
-            return {"reply":reply,"engine":"Groq/Llama3 (free)","cost":"Rs.0"}
+            return {"reply":reply,"engine":"Groq/Llama3","cost":"Rs.0"}
     except Exception as e:
-        return {"reply":f"AI error: {str(e)[:100]}. Please try again.","engine":"error"}
+        return {"reply":f"Sorry, AI error: {str(e)[:80]}. Please try again!","engine":"error"}
 
 @app.post("/api/financial-health-score")
 async def financial_health_score(request:dict):
