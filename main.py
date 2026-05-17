@@ -953,7 +953,7 @@ async def crypto_prices():
             data = r.json()
         names = {"bitcoin":"Bitcoin","ethereum":"Ethereum","binancecoin":"BNB","solana":"Solana"}
         coins = []
-         for cid, info in data.items():
+        for cid, info in data.items():
             inr = info.get("inr",0); chg = info.get("inr_24h_change",0)
             fmt = f"Rs.{inr/10000000:.2f} Cr" if inr>10000000 else f"Rs.{inr/100000:.2f} L" if inr>100000 else f"Rs.{inr:,.2f}"
             coins.append({"id":cid,"name":names.get(cid,cid),"price_inr":round(inr,2),"formatted_inr":fmt,"change_24h_pct":round(chg,2),"direction":"up" if chg>=0 else "down"})
