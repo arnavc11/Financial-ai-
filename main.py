@@ -11,14 +11,19 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
 
-# Serve frontend with NO caching headers
 @app.get("/", include_in_schema=False)
 async def root():
-    response = FileResponse("frontend/index.html")
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
+    with open("frontend/index.html", "r") as f:
+        content = f.read()
+    return HTMLResponse(
+        content=content,
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0",
+            "Surrogate-Control": "no-store",
+        }
+    )
 
 @app.get("/health")
 async def health():
