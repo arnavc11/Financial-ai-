@@ -546,6 +546,48 @@ async function sendMsg(tab) {
   if (!text) return;
   input.value = ''; input.style.height = 'auto';
   addBubble(msgId, text, true);
+
+  // Try to fetch live stock price if user asked about one
+  let liveData = '';
+  const textLower = text.toLowerCase();
+  const stockMap = {
+    'reliance':'RELIANCE','tcs':'TCS','infosys':'INFY','infy':'INFY',
+    'hdfc':'HDFCBANK','hdfcbank':'HDFCBANK','icici':'ICICIBANK',
+    'sbi':'SBIN','wipro':'WIPRO','bajaj':'BAJFINANCE','kotak':'KOTAKBANK',
+    'axis':'AXISBANK','maruti':'MARUTI','itc':'ITC','airtel':'BHARTIARTL',
+    'titan':'TITAN','nestle':'NESTLEIND','lt':'LT','ongc':'ONGC',
+    'tatamotors':'TATAMOTORS','tata motors':'TATAMOTORS','ntpc':'NTPC',
+    'adani':'ADANIPORTS','bajajfinance':'BAJFINANCE','sunpharma':'SUNPHARMA'
+  };
+  for (const [name, sym] of Object.entries(stockMap)) {
+    if (textLower.includes(name)) {
+      try {
+        const r = await fetch('/api/stocks/quote/' + sym);
+        const d = await r.json();
+        if (d.current_price) {
+          liveData = 'LIVE NSE DATA: ' + sym + ' is trading at Rs.' + d.current_price.toLocaleString('en-IN') + ' (' + (d.change_pct >= 0 ? '+' : '') + d.change_pct + '% today). 52W High: Rs.' + d['52w_high'].toLocaleString('en-IN') + ', 52W Low: Rs.' + d['52w_low'].toLocaleString('en-IN') + '.';
+        }
+      } catch(e) {}
+      break;
+    }
+  }
+
+  // Also fetch crypto if asked
+  const cryptoMap = {'bitcoin':'bitcoin','btc':'bitcoin','ethereum':'ethereum','eth':'ethereum','bnb':'binancecoin','solana':'solana','sol':'solana'};
+  for (const [name, id] of Object.entries(cryptoMap)) {
+    if (textLower.includes(name)) {
+      try {
+        const r = await fetch('/api/crypto/prices');
+        const d = await r.json();
+        const coin = d.coins.find(c => c.id === id);
+        if (coin) liveData += ' LIVE CRYPTO: ' + coin.name + ' = ' + coin.formatted_inr + ' (' + (coin.change_24h_pct >= 0 ? '+' : '') + coin.change_24h_pct + '% today).';
+      } catch(e) {}
+      break;
+    }
+  }
+
+  const contextMsg = liveData ? {role:'system', content: getTabContext(tab) + ' ' + liveData} : {role:'system', content: getTabContext(tab)};
+
   chatHistories[tab].push({role:'user', content:text});
   showTypingIn(msgId);
   const btnId = tab === 'chat' ? 'sendBtn' : null;
@@ -555,7 +597,7 @@ async function sendMsg(tab) {
     const res = await fetch('/api/ai/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        messages: [{role:'system', content: getTabContext(tab)}, ...chatHistories[tab].slice(-8)],
+        messages: [contextMsg, ...chatHistories[tab].slice(-8)],
         language: currentLang
       })
     });
@@ -592,28 +634,49 @@ function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.sc
 const LANG_CODES = {english:'en-IN',hindi:'hi-IN',tamil:'ta-IN',telugu:'te-IN',bengali:'bn-IN',marathi:'mr-IN',gujarati:'gu-IN',kannada:'kn-IN'};
 
 function startRecognition(inputId, statusId, tab) {
+  const statusEl = document.getElementById(statusId);
   if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    document.getElementById(statusId).textContent = '⚠️ Voice not supported. Use Chrome browser.'; return;
+    statusEl.textContent = '⚠️ Voice needs Chrome browser.'; return;
   }
   if (isRecording) { stopVoice(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.lang = LANG_CODES[currentLang] || 'en-IN';
-  recognition.continuous = false; recognition.interimResults = false;
-  recognition.onstart = () => {
-    isRecording = true; activeVoiceTab = tab;
-    document.getElementById(statusId).textContent = '🎤 Listening... Speak now!';
-  };
-  recognition.onresult = (e) => {
-    const t = e.results[0][0].transcript;
-    document.getElementById(inputId).value = t;
-    document.getElementById(statusId).textContent = '✅ Got: "' + t + '"';
-    stopVoice();
-    setTimeout(() => sendMsg(tab), 400);
-  };
-  recognition.onerror = () => { document.getElementById(statusId).textContent = '❌ Could not hear. Try again.'; stopVoice(); };
-  recognition.onend = () => stopVoice();
-  recognition.start();
+  // Request microphone permission explicitly first
+  navigator.mediaDevices.getUserMedia({audio: true})
+    .then(stream => {
+      stream.getTracks().forEach(track => track.stop()); // stop preview stream
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SR();
+      recognition.lang = LANG_CODES[currentLang] || 'en-IN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.onstart = () => {
+        isRecording = true; activeVoiceTab = tab;
+        statusEl.textContent = '🎤 Listening... Speak now!';
+        const vBtn = document.getElementById('voiceBtn');
+        if(vBtn) { vBtn.textContent = '⏹️'; vBtn.classList.add('recording'); }
+      };
+      recognition.onresult = (e) => {
+        const t = e.results[0][0].transcript;
+        document.getElementById(inputId).value = t;
+        statusEl.textContent = '✅ Got: "' + t + '"';
+        stopVoice();
+        setTimeout(() => sendMsg(tab), 400);
+      };
+      recognition.onerror = (e) => {
+        const msgs = {
+          'not-allowed': '❌ Microphone blocked. Allow mic in browser settings.',
+          'no-speech': '❌ No speech detected. Try again.',
+          'network': '❌ Network error. Check connection.',
+          'aborted': ''
+        };
+        statusEl.textContent = msgs[e.error] || '❌ Error: ' + e.error;
+        stopVoice();
+      };
+      recognition.onend = () => stopVoice();
+      recognition.start();
+    })
+    .catch(err => {
+      statusEl.textContent = '❌ Microphone blocked! Go to browser Settings → Site Settings → Microphone → Allow for this site.';
+    });
 }
 
 function toggleVoice() { startRecognition('chatInput','voiceStatus','chat'); }
@@ -631,7 +694,7 @@ function stopVoice() {
   setTimeout(() => {
     ['voiceStatus','cryptoVoiceStatus','stocksVoiceStatus','sipVoiceStatus'].forEach(id => {
       const el = document.getElementById(id); if (el) el.textContent = '';
-          });
+    });
   }, 3000);
 }
 
@@ -649,7 +712,7 @@ async function loadCrypto() {
       el.textContent = (coin.change_24h_pct>=0?'▲ +':'▼ ') + coin.change_24h_pct + '% today';
       el.className = 'coin-chg ' + (coin.change_24h_pct>=0?'up':'down');
     });
-    const btc = data.coins.find(c=>c.id==='bitcoin');
+     const btc = data.coins.find(c=>c.id==='bitcoin');
     if (btc) {
       const g = document.getElementById('cryptoGreeting');
       if (g) {
@@ -803,7 +866,7 @@ async function calcHealth() {
 
   // Also ask AI for personalised plan
   try {
-  const r = await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+    const r = await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:[{role:'user',content:`Indian person age ${age}, income Rs.${income}, savings ${savRate.toFixed(0)}%, financial health score ${score}/100. Give 3 specific actionable tips in simple English. Be concise.`}],language:currentLang})});
     const d = await r.json();
     if (d.reply) {
@@ -931,18 +994,11 @@ calcSIP();
 
 @app.get("/", include_in_schema=False)
 async def root():
-    return HTMLResponse(
-        content=HTML_PAGE,
-        headers={
-            "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
-            "Pragma": "no-cache",
-            "Expires": "0"
-        }
-    )
+    return HTMLResponse(content=HTML_PAGE, headers={"Cache-Control":"no-cache, no-store, must-revalidate, max-age=0","Pragma":"no-cache","Expires":"0"})
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "app": "FinAI", "version": "4.0.0"}
+    return {"status":"ok","app":"FinAI","version":"5.0.0"}
 
 @app.get("/api/crypto/prices")
 async def crypto_prices():
@@ -1061,28 +1117,29 @@ async def ai_chat(request:dict):
                         params={"interval":"1d","range":"2d"},headers={"User-Agent":"Mozilla/5.0"})
                     closes = r.json()["chart"]["result"][0]["indicators"]["quote"][0]["close"]
                     curr=closes[-1]; prev=closes[-2]; chg=((curr-prev)/prev)*100
-                    stock_data = f"LIVE: {sym} is at Rs.{curr:,.2f} ({chg:+.2f}% today). "
+                    meta = r.json()["chart"]["result"][0]["meta"]
+                    stock_data = f"LIVE NSE DATA for {sym}: Rs.{curr:,.2f} ({chg:+.2f}% today). 52W High: Rs.{meta.get('fiftyTwoWeekHigh',0):,.2f}, 52W Low: Rs.{meta.get('fiftyTwoWeekLow',0):,.2f}. "
             except:
                 pass
             break
-    system_prompt = f"""You are FinAI, an intelligent Indian financial AI assistant with access to LIVE market data.
+    system_prompt = f"""You are FinAI, an intelligent Indian financial AI with LIVE market data access.
 
 LIVE MARKET DATA:
 {market_context}
 {stock_data}
 
 RULES:
-1. ALWAYS give direct answers with actual numbers — never say check elsewhere
-2. Use live data above when answering about prices
+1. ALWAYS answer directly with actual numbers from live data above
+2. NEVER say check elsewhere, I dont have access, or I cant provide
 3. Be friendly and conversational like a knowledgeable friend
-4. Use Rs. for prices, Indian numbering (Lakh/Crore)
-5. Give specific actionable advice
-6. Add brief risk disclaimer for investment advice
-7. Reply in {language}
-8. Keep responses to 3-5 sentences unless detailed analysis needed"""
+4. Use Rs. for prices, Lakh and Crore for large numbers
+5. Give specific actionable advice with brief risk disclaimer
+6. Reply in {language}
+7. Keep responses concise 3-5 sentences unless detailed analysis needed
+8. If stock data is provided above use those exact numbers in your answer"""
 
     if not GROQ_KEY:
-        return {"reply":f"FinAI is live! Current market: {market_context} Add GROQ_API_KEY in Render Environment for full AI responses!","engine":"no key"}
+        return {"reply":f"FinAI is live! Current market: {market_context} Add GROQ_API_KEY in Render Environment for full AI chat!","engine":"no key"}
     try:
         async with httpx.AsyncClient(timeout=30) as c:
             r = await c.post("https://api.groq.com/openai/v1/chat/completions",
