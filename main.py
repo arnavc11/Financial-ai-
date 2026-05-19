@@ -58,7 +58,6 @@ header{background:var(--card);border-bottom:1px solid var(--border);padding:10px
 .tab.active{background:var(--accent);color:var(--dark);border-color:var(--accent);}
 .content{flex:1;overflow-y:auto;padding:14px;display:none;flex-direction:column;}
 .content.active{display:flex;}
-/* CHAT */
 .chat-wrap{display:flex;flex-direction:column;height:100%;min-height:0;}
 .messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:6px;min-height:0;}
 .msg{display:flex;gap:8px;animation:fadeUp 0.3s ease;}
@@ -86,21 +85,18 @@ header{background:var(--card);border-bottom:1px solid var(--border);padding:10px
 .btn-voice:hover{border-color:var(--accent);}
 .btn-voice.recording{background:var(--red);border-color:var(--red);}
 .voice-status{font-size:10px;color:var(--muted);padding:3px 0;font-family:'Space Mono',monospace;flex-shrink:0;}
-/* CARDS */
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
 .card h3{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;}
 .metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
 .metric{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;}
 .metric-val{font-size:16px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;}
 .metric-lbl{font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
-/* CRYPTO */
 .crypto-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
 .crypto-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;}
 .coin-name{font-size:12px;font-weight:700;color:#fff;}
 .coin-price{font-size:15px;font-weight:800;color:var(--accent);font-family:'Space Mono',monospace;margin:4px 0;}
 .coin-chg{font-size:10px;}
 .tax-note{background:rgba(245,200,66,0.07);border-left:2px solid var(--gold);padding:6px 8px;border-radius:0 5px 5px 0;margin-top:7px;font-size:10px;color:var(--muted);line-height:1.5;}
-/* SIP */
 .sip-form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
 .form-group label{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
@@ -112,7 +108,6 @@ header{background:var(--card);border-bottom:1px solid var(--border);padding:10px
 .result-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
 .result-row:last-child{border-bottom:none;}
 .result-val{color:var(--gold);font-weight:700;font-family:'Space Mono',monospace;}
-/* HEALTH SCORE */
 .score-ring{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:0 auto 14px;border:8px solid var(--border);}
 .score-num{font-size:34px;font-weight:800;font-family:'Space Mono',monospace;}
 .score-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;}
@@ -123,7 +118,6 @@ header{background:var(--card);border-bottom:1px solid var(--border);padding:10px
 .breakdown-name{font-size:10px;color:var(--muted);min-width:95px;}
 .breakdown-score{font-size:10px;font-family:'Space Mono',monospace;color:var(--text);min-width:40px;text-align:right;}
 .tip-item{background:var(--surface);border-left:3px solid var(--gold);padding:8px 10px;border-radius:0 7px 7px 0;margin-bottom:7px;font-size:11px;color:var(--text);line-height:1.7;}
-/* UPI */
 .upi-cat{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--border);}
 .upi-cat:last-child{border-bottom:none;}
 .upi-bar-wrap{flex:1;height:7px;background:var(--surface);border-radius:4px;overflow:hidden;}
@@ -133,11 +127,9 @@ header{background:var(--card);border-bottom:1px solid var(--border);padding:10px
 .upi-pct{font-size:9px;color:var(--muted);min-width:32px;text-align:right;}
 .waste-card{background:rgba(255,68,102,0.08);border:1px solid rgba(255,68,102,0.2);border-radius:9px;padding:10px;margin-bottom:7px;}
 .invest-card{background:rgba(0,229,170,0.07);border:1px solid rgba(0,229,170,0.2);border-radius:9px;padding:10px;margin-bottom:7px;}
-/* LANG */
 .lang-row{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:7px;display:flex;gap:10px;}
 .lang-name{font-size:9px;font-weight:700;color:var(--accent);margin-bottom:2px;font-family:'Space Mono',monospace;}
 .lang-text{font-size:11px;color:var(--text);line-height:1.5;}
-/* MOOD */
 .mood-bar{height:9px;background:var(--surface);border-radius:5px;overflow:hidden;margin:7px 0;}
 .mood-fill{height:100%;border-radius:5px;transition:width 0.5s;}
 .headline-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:11px;gap:7px;}
@@ -145,8 +137,7 @@ header{background:var(--card);border-bottom:1px solid var(--border);padding:10px
 .badge{padding:2px 7px;border-radius:9px;font-size:9px;font-weight:700;white-space:nowrap;}
 .badge-bull{background:rgba(0,229,170,0.12);color:var(--accent);}
 .badge-bear{background:rgba(255,68,102,0.12);color:var(--red);}
-.badge-neut{background:rgba(245,200,66,0.12);color:var(--gold);}
-/* CHECKBOX */
+.badge-neut{background:rgba(245,200,66,0.12);color:var(--gold);
 .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
 .check-label{display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;background:var(--surface);padding:9px 10px;border-radius:7px;border:1px solid var(--border);}
 .check-label input{width:15px;height:15px;accent-color:var(--accent);}
@@ -166,7 +157,6 @@ button{cursor:pointer;font-family:'DM Sans',sans-serif;}
 </div>
 
 <div class="layout">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-section">
       <h4>Language / भाषा</h4>
@@ -201,8 +191,7 @@ button{cursor:pointer;font-family:'DM Sans',sans-serif;}
       </div>
     </div>
   </div>
-
-  <!-- MAIN -->
+  
   <div class="main">
     <div class="tabs">
       <button class="tab active" onclick="switchTab('chat',this)">💬 AI Chat</button>
@@ -215,7 +204,6 @@ button{cursor:pointer;font-family:'DM Sans',sans-serif;}
       <button class="tab" onclick="switchTab('languages',this)">🌐 Languages</button>
     </div>
 
-    <!-- AI CHAT TAB -->
     <div class="content active" id="tab-chat">
       <div class="chat-wrap">
         <div class="messages" id="messages">
@@ -245,7 +233,6 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-    <!-- CRYPTO TAB -->
     <div class="content" id="tab-crypto">
       <div class="crypto-grid" id="cryptoGrid">
         <div class="crypto-card"><div class="coin-name">₿ Bitcoin</div><div class="coin-price" id="btcPrice">Loading...</div><div class="coin-chg" id="btcChg"></div><div class="tax-note">🇮🇳 30% tax on profits + 1% TDS above ₹10,000</div></div>
@@ -275,7 +262,6 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-    <!-- STOCKS TAB -->
     <div class="content" id="tab-stocks">
       <div class="metric-row">
         <div class="metric"><div class="metric-val" id="niftyVal">--</div><div class="metric-lbl">NIFTY 50</div></div>
@@ -311,7 +297,6 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-    <!-- SIP TAB -->
     <div class="content" id="tab-sip">
       <div class="sip-form">
         <h3 style="margin-bottom:10px;">💰 SIP Wealth Calculator</h3>
@@ -350,7 +335,6 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-    <!-- SENTIMENT TAB -->
     <div class="content" id="tab-sentiment">
       <div class="card">
         <h3>Today's Market Mood</h3>
@@ -368,7 +352,6 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-    <!-- HEALTH SCORE TAB -->
     <div class="content" id="tab-health">
       <div class="card">
         <h3>🏥 Financial Health Score — Like CIBIL but Complete</h3>
@@ -412,7 +395,6 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-    <!-- UPI ANALYZER TAB -->
     <div class="content" id="tab-upi">
       <div class="card">
         <h3>💳 UPI Budget Analyzer — Find Where Your Money Goes</h3>
@@ -444,7 +426,6 @@ Zomato 320"></textarea>
       </div>
     </div>
 
-    <!-- LANGUAGES TAB -->
     <div class="content" id="tab-languages">
       <div class="card" style="margin-bottom:12px;">
         <h3>🌐 Same Signal — 8 Indian Languages</h3>
@@ -465,18 +446,15 @@ Zomato 320"></textarea>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────
 let currentLang = 'english';
 let chatHistories = { chat:[], crypto:[], stocks:[], sip:[] };
 let isRecording = false;
 let recognition = null;
 let activeVoiceTab = 'chat';
 
-// ── Ticker ─────────────────────────────────────────────────────────
 const td = 'NIFTY 50: 22,147 ▲0.84%  •  SENSEX: 73,088 ▲0.76%  •  BANK NIFTY: 47,321 ▲1.12%  •  BTC/INR: ₹74.2L ▲3.45%  •  ETH/INR: ₹2.19L ▲1.92%  •  GOLD: ₹71,240 ▲0.22%  •  USD/INR: ₹83.47  •  REPO: 6.00%  •  ';
 document.getElementById('tickerText').textContent = td + td;
 
-// ── Tab switching ──────────────────────────────────────────────────
 function switchTab(tab, btn) {
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -488,14 +466,12 @@ function switchTab(tab, btn) {
   if (tab === 'languages') renderLangs();
 }
 
-// ── Language ───────────────────────────────────────────────────────
 function onLangChange(lang) {
   currentLang = lang;
   const g = {english:"Language set to English!",hindi:"भाषा हिंदी में बदल दी!",tamil:"மொழி தமிழாக மாற்றப்பட்டது!",telugu:"భాష తెలుగులో మార్చబడింది!",bengali:"ভাষা বাংলায় পরিবর্তিত হয়েছে!",marathi:"भाषा मराठीत बदलली!",gujarati:"ભાષા ગુજરાતીમાં બદલાઈ!",kannada:"ಭಾಷೆ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿತು!"};
   addBubble('messages', g[lang] || g.english);
 }
 
-// ── Chat ───────────────────────────────────────────────────────────
 function addBubble(containerId, text, isUser=false) {
   const c = document.getElementById(containerId);
   if (!c) return;
@@ -547,7 +523,6 @@ async function sendMsg(tab) {
   input.value = ''; input.style.height = 'auto';
   addBubble(msgId, text, true);
 
-  // Try to fetch live stock price if user asked about one
   let liveData = '';
   const textLower = text.toLowerCase();
   const stockMap = {
@@ -572,7 +547,6 @@ async function sendMsg(tab) {
     }
   }
 
-  // Also fetch crypto if asked
   const cryptoMap = {'bitcoin':'bitcoin','btc':'bitcoin','ethereum':'ethereum','eth':'ethereum','bnb':'binancecoin','solana':'solana','sol':'solana'};
   for (const [name, id] of Object.entries(cryptoMap)) {
     if (textLower.includes(name)) {
@@ -630,7 +604,6 @@ function handleKey(e) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sen
 function handleTabKey(e, tab) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg(tab);} }
 function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,90)+'px'; }
 
-// ── Voice ──────────────────────────────────────────────────────────
 const LANG_CODES = {english:'en-IN',hindi:'hi-IN',tamil:'ta-IN',telugu:'te-IN',bengali:'bn-IN',marathi:'mr-IN',gujarati:'gu-IN',kannada:'kn-IN'};
 
 function startRecognition(inputId, statusId, tab) {
@@ -698,7 +671,6 @@ function stopVoice() {
   }, 3000);
 }
 
-// ── Crypto ─────────────────────────────────────────────────────────
 async function loadCrypto() {
   try {
     const res = await fetch('/api/crypto/prices');
@@ -712,7 +684,7 @@ async function loadCrypto() {
       el.textContent = (coin.change_24h_pct>=0?'▲ +':'▼ ') + coin.change_24h_pct + '% today';
       el.className = 'coin-chg ' + (coin.change_24h_pct>=0?'up':'down');
     });
-     const btc = data.coins.find(c=>c.id==='bitcoin');
+    const btc = data.coins.find(c=>c.id==='bitcoin');
     if (btc) {
       const g = document.getElementById('cryptoGreeting');
       if (g) {
@@ -724,7 +696,6 @@ async function loadCrypto() {
   } catch(e) { document.getElementById('btcPrice').textContent='Error loading'; }
 }
 
-// ── Indices ────────────────────────────────────────────────────────
 async function loadIndices() {
   try {
     const res = await fetch('/api/stocks/indices');
@@ -757,7 +728,6 @@ async function analyseStock() {
   } catch(e) { res.innerHTML='<span style="color:var(--red)">Error. Try again.</span>'; }
 }
 
-// ── SIP ────────────────────────────────────────────────────────────
 function calcSIP() {
   const M=parseFloat(document.getElementById('sipAmt').value);
   const r=parseFloat(document.getElementById('sipRate').value)/100/12;
@@ -772,7 +742,6 @@ function calcSIP() {
   document.getElementById('sipComment').textContent=`💡 By investing just ${fmt(M)}/month for ${document.getElementById('sipYrs').value} years, your money grows ${mult.toFixed(1)}x! You invest ${fmt(inv)} and get back ${fmt(fv)}. The extra ${fmt(gain)} is FREE money from compounding!`;
 }
 
-// ── Sentiment ──────────────────────────────────────────────────────
 async function loadSentiment() {
   try {
     const res = await fetch('/api/ml/sentiment');
@@ -794,7 +763,6 @@ async function loadSentiment() {
   } catch(e) { document.getElementById('moodLabel').textContent='Could not load'; }
 }
 
-// ── Health Score ───────────────────────────────────────────────────
 async function calcHealth() {
   const income=parseFloat(document.getElementById('hIncome').value)||0;
   if (!income) { alert('Please enter monthly income!'); return; }
@@ -808,7 +776,6 @@ async function calcHealth() {
   const hasEmergency=document.getElementById('hEmergency').checked;
   const hasRetire=document.getElementById('hRetire').checked;
 
-  // Client-side scoring (fallback if API not connected)
   let score=0; const breakdown={}; const tips=[];
   const savRate=(savings/income)*100;
   const sScore=savRate>=30?25:savRate>=20?20:savRate>=10?12:savRate>=5?6:0;
@@ -864,7 +831,6 @@ async function calcHealth() {
 
   document.getElementById('healthResult').scrollIntoView({behavior:'smooth'});
 
-  // Also ask AI for personalised plan
   try {
     const r = await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:[{role:'user',content:`Indian person age ${age}, income Rs.${income}, savings ${savRate.toFixed(0)}%, financial health score ${score}/100. Give 3 specific actionable tips in simple English. Be concise.`}],language:currentLang})});
@@ -877,13 +843,11 @@ async function calcHealth() {
   } catch(e) {}
 }
 
-// ── UPI Analyzer ───────────────────────────────────────────────────
 async function analyzeUPI() {
   const text=document.getElementById('upiText').value.trim();
   const income=parseFloat(document.getElementById('upiIncome').value)||0;
   if (!text) { alert('Please paste your transactions!'); return; }
 
-  // Client-side parsing
   const CATS={
     'Food & Dining':['swiggy','zomato','food','restaurant','cafe','dominos','kfc','pizza','burger','hotel','mess','chai'],
     'Transport':['ola','uber','rapido','metro','petrol','fuel','cab','auto','irctc','railway'],
@@ -931,7 +895,6 @@ async function analyzeUPI() {
     return `<div class="upi-cat"><div class="upi-catname">${cat}</div><div class="upi-bar-wrap"><div class="upi-bar" style="width:${(amt/maxAmt)*100}%;background:${bc}"></div></div><div class="upi-amt">₹${amt.toLocaleString('en-IN')}</div><div class="upi-pct">${pct}%</div></div>`;
   }).join('');
 
-  // Wasteful spending
   const WASTEFUL=['Food & Dining','Entertainment','Shopping'];
   const waste=sorted.filter(([cat,amt])=>WASTEFUL.includes(cat)&&(amt/total)>0.15);
   if (waste.length) {
@@ -943,7 +906,6 @@ async function analyzeUPI() {
     }).join('');
   }
 
-  // Investment insight
   const foodAmt=catTotals['Food & Dining']||0;
   if (foodAmt>1000) {
     document.getElementById('upiInvestSection').style.display='block';
@@ -951,7 +913,6 @@ async function analyzeUPI() {
     document.getElementById('upiInvestList').innerHTML=`<div class="invest-card" style="font-size:12px;line-height:1.8;">🚀 If you invested your monthly food budget of ₹${foodAmt.toLocaleString('en-IN')} instead of spending it, at 12% annual return over 20 years you would have <b style="color:var(--accent)">₹${sip20.toFixed(1)} Lakh!</b></div>`;
   }
 
-  // Ask AI for tips
   try {
     const top3=sorted.slice(0,3).map(([c,a])=>`${c}: Rs.${a.toLocaleString('en-IN')}`).join(', ');
     const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -966,7 +927,6 @@ async function analyzeUPI() {
   document.getElementById('upiResult').scrollIntoView({behavior:'smooth'});
 }
 
-// ── Languages ──────────────────────────────────────────────────────
 const LANGS={
   english:{name:'🇬🇧 English',text:'RSI is 72 for RELIANCE. Stock looks overpriced — wait before buying. Price may fall soon.',color:'var(--accent)'},
   hindi:{name:'🇮🇳 हिंदी',text:'RELIANCE का RSI 72 है। यह शेयर महंगा लग रहा है — अभी मत खरीदो। दाम नीचे आ सकता है।',color:'var(--gold)'},
@@ -985,7 +945,6 @@ function renderLangs() {
     </div>`).join('');
 }
 
-// ── Init ───────────────────────────────────────────────────────────
 calcSIP();
 </script>
 </body>
@@ -994,32 +953,47 @@ calcSIP();
 
 @app.get("/", include_in_schema=False)
 async def root():
-    return HTMLResponse(content=HTML_PAGE, headers={"Cache-Control":"no-cache, no-store, must-revalidate, max-age=0","Pragma":"no-cache","Expires":"0"})
+    return HTMLResponse(content=HTML_PAGE, headers={
+        "Cache-Control":"no-cache, no-store, must-revalidate, max-age=0",
+        "Pragma":"no-cache","Expires":"0"})
 
 @app.get("/health")
 async def health():
-    return {"status":"ok","app":"FinAI","version":"5.0.0"}
+    return {"status":"ok","app":"FinAI","version":"6.0.0"}
 
 @app.get("/api/crypto/prices")
 async def crypto_prices():
     try:
         async with httpx.AsyncClient(timeout=10) as c:
             r = await c.get("https://api.coingecko.com/api/v3/simple/price",
-                params={"ids":"bitcoin,ethereum,binancecoin,solana","vs_currencies":"inr,usd","include_24hr_change":"true"})
+                params={"ids":"bitcoin,ethereum,binancecoin,solana",
+                        "vs_currencies":"inr,usd","include_24hr_change":"true"})
             data = r.json()
         names = {"bitcoin":"Bitcoin","ethereum":"Ethereum","binancecoin":"BNB","solana":"Solana"}
         coins = []
         for cid, info in data.items():
-            inr = info.get("inr",0); chg = info.get("inr_24h_change",0)
-            fmt = f"Rs.{inr/10000000:.2f} Cr" if inr>10000000 else f"Rs.{inr/100000:.2f} L" if inr>100000 else f"Rs.{inr:,.2f}"
-            coins.append({"id":cid,"name":names.get(cid,cid),"price_inr":round(inr,2),"formatted_inr":fmt,"change_24h_pct":round(chg,2),"direction":"up" if chg>=0 else "down"})
+            inr = info.get("inr",0)
+            chg = info.get("inr_24h_change",0)
+            if inr > 10000000:
+                fmt = f"Rs.{inr/10000000:.2f} Cr"
+            elif inr > 100000:
+                fmt = f"Rs.{inr/100000:.2f} L"
+            else:
+                fmt = f"Rs.{inr:,.2f}"
+            coins.append({"id":cid,"name":names.get(cid,cid),"price_inr":round(inr,2),
+                          "formatted_inr":fmt,"change_24h_pct":round(chg,2),
+                          "direction":"up" if chg>=0 else "down"})
         return {"coins":coins,"timestamp":datetime.now().isoformat()}
     except Exception as e:
         return JSONResponse(status_code=503,content={"error":str(e)})
 
 @app.get("/api/rbi/rates")
 async def rbi_rates():
-    return {"rates":{"repo_rate":{"value":6.00,"unit":"%"},"reverse_repo":{"value":3.35,"unit":"%"},"crr":{"value":4.00,"unit":"%"},"slr":{"value":18.00,"unit":"%"}},"last_updated":"April 2026","usd_inr":83.47}
+    return {"rates":{"repo_rate":{"value":6.00,"unit":"%"},
+                     "reverse_repo":{"value":3.35,"unit":"%"},
+                     "crr":{"value":4.00,"unit":"%"},
+                     "slr":{"value":18.00,"unit":"%"}},
+            "last_updated":"April 2026","usd_inr":83.47}
 
 @app.get("/api/stocks/indices")
 async def stock_indices():
@@ -1029,10 +1003,13 @@ async def stock_indices():
             for name,sym in [("NIFTY50","^NSEI"),("SENSEX","^BSESN"),("BANKNIFTY","^NSEBANK")]:
                 try:
                     r = await c.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}",
-                        params={"interval":"1d","range":"2d"},headers={"User-Agent":"Mozilla/5.0"})
+                        params={"interval":"1d","range":"2d"},
+                        headers={"User-Agent":"Mozilla/5.0"})
                     closes = r.json()["chart"]["result"][0]["indicators"]["quote"][0]["close"]
                     curr=closes[-1]; prev=closes[-2]; chg=((curr-prev)/prev)*100
-                    results[name]={"value":round(curr,2),"change_pct":round(chg,2),"direction":"up" if chg>=0 else "down","formatted":f"{curr:,.2f}"}
+                    results[name]={"value":round(curr,2),"change_pct":round(chg,2),
+                                   "direction":"up" if chg>=0 else "down",
+                                   "formatted":f"{curr:,.2f}"}
                 except:
                     results[name]={"error":"unavailable"}
         return {"indices":results,"timestamp":datetime.now().isoformat()}
@@ -1043,47 +1020,74 @@ async def stock_indices():
 async def stock_quote(symbol:str):
     try:
         async with httpx.AsyncClient(timeout=10) as c:
-            r = await c.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol.upper()}.NS",
-                params={"interval":"1d","range":"5d"},headers={"User-Agent":"Mozilla/5.0"})
+            r = await c.get(
+                f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol.upper()}.NS",
+                params={"interval":"1d","range":"5d"},
+                headers={"User-Agent":"Mozilla/5.0"})
         d = r.json()["chart"]["result"][0]
         closes = d["indicators"]["quote"][0]["close"]
         curr=closes[-1]; prev=closes[-2]; chg=((curr-prev)/prev)*100
-        return {"symbol":symbol.upper(),"current_price":round(curr,2),"formatted":f"Rs.{curr:,.2f}","change_pct":round(chg,2),"direction":"up" if chg>=0 else "down","52w_high":round(d["meta"].get("fiftyTwoWeekHigh",0),2),"52w_low":round(d["meta"].get("fiftyTwoWeekLow",0),2)}
+        return {"symbol":symbol.upper(),"current_price":round(curr,2),
+                "formatted":f"Rs.{curr:,.2f}","change_pct":round(chg,2),
+                "direction":"up" if chg>=0 else "down",
+                "52w_high":round(d["meta"].get("fiftyTwoWeekHigh",0),2),
+                "52w_low":round(d["meta"].get("fiftyTwoWeekLow",0),2)}
     except Exception as e:
         return JSONResponse(status_code=503,content={"error":str(e)})
 
 @app.get("/api/mf/sip-calculator")
 async def sip_calculator(monthly_amount:float=5000,annual_return_pct:float=12.0,years:int=10):
     r=(annual_return_pct/100)/12; n=years*12
-    fv=monthly_amount*(((1+r)**n-1)/r)*(1+r); inv=monthly_amount*n; gain=fv-inv
-    def fmt(v): return f"Rs.{v/10000000:.2f} Crore" if v>=10000000 else f"Rs.{v/100000:.2f} Lakh" if v>=100000 else f"Rs.{v:,.2f}"
-    return {"monthly_sip":monthly_amount,"years":years,"total_invested":round(inv,2),"future_value":round(fv,2),"total_gain":round(gain,2),"wealth_ratio":round(fv/inv,2),"formatted":{"invested":fmt(inv),"wealth":fmt(fv),"gain":fmt(gain)}}
+    fv=monthly_amount*(((1+r)**n-1)/r)*(1+r)
+    inv=monthly_amount*n; gain=fv-inv
+    def fmt(v):
+        if v>=10000000: return f"Rs.{v/10000000:.2f} Crore"
+        elif v>=100000: return f"Rs.{v/100000:.2f} Lakh"
+        return f"Rs.{v:,.2f}"
+    return {"monthly_sip":monthly_amount,"years":years,
+            "total_invested":round(inv,2),"future_value":round(fv,2),
+            "total_gain":round(gain,2),"wealth_ratio":round(fv/inv,2),
+            "formatted":{"invested":fmt(inv),"wealth":fmt(fv),"gain":fmt(gain)}}
 
 @app.get("/api/ml/sentiment")
 async def market_sentiment():
-    LEXICON={"record high":1.8,"rally":1.5,"profit":1.2,"growth":0.8,"gains":0.9,"strong":0.7,"surge":0.8,"beat":1.2,"crash":-1.8,"recession":-2.0,"npa":-1.5,"outflow":-1.3,"selloff":-1.5,"warning":-1.5,"concerns":-0.8,"inflation":-0.8,"fears":-1.0}
+    LEXICON={"record high":1.8,"rally":1.5,"profit":1.2,"growth":0.8,"gains":0.9,
+             "strong":0.7,"surge":0.8,"beat":1.2,"crash":-1.8,"recession":-2.0,
+             "npa":-1.5,"outflow":-1.3,"selloff":-1.5,"warning":-1.5,
+             "concerns":-0.8,"inflation":-0.8,"fears":-1.0}
     try:
         import feedparser
         async with httpx.AsyncClient(timeout=10) as c:
-            r = await c.get("https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",headers={"User-Agent":"FinAI/2.0"})
+            r = await c.get(
+                "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
+                headers={"User-Agent":"FinAI/2.0"})
         feed = feedparser.parse(r.text)
         headlines = [e.get("title","") for e in feed.entries[:15] if e.get("title")]
     except:
-        headlines = ["Nifty hits record high on FII inflows","Market rallies on strong results","RBI holds rates steady"]
+        headlines = ["Nifty hits record high on FII inflows",
+                     "Market rallies on strong results","RBI holds rates steady"]
     scored = []
     for h in headlines:
-        s = sum(v for t,v in LEXICON.items() if t in h.lower()); s=max(-1.0,min(1.0,s/3.0))
-        scored.append({"headline":h,"score":round(s,3),"label":"BULLISH" if s>=0.15 else("BEARISH" if s<=-0.15 else "NEUTRAL")})
+        s = sum(v for t,v in LEXICON.items() if t in h.lower())
+        s = max(-1.0,min(1.0,s/3.0))
+        scored.append({"headline":h,"score":round(s,3),
+                       "label":"BULLISH" if s>=0.15 else("BEARISH" if s<=-0.15 else "NEUTRAL")})
     mood = sum(s["score"] for s in scored)/len(scored) if scored else 0
     bull=sum(1 for s in scored if s["label"]=="BULLISH")
     bear=sum(1 for s in scored if s["label"]=="BEARISH")
     neut=sum(1 for s in scored if s["label"]=="NEUTRAL")
-    return {"mood_score":round(mood,3),"mood_label":"BULLISH 📈" if mood>0.1 else("BEARISH 📉" if mood<-0.1 else "NEUTRAL ➡"),"prediction":"Nifty likely to open HIGHER" if mood>0.1 else("Nifty likely LOWER" if mood<-0.1 else "Direction uncertain"),"breakdown":{"bullish":bull,"bearish":bear,"neutral":neut},"top_headlines":sorted(scored,key=lambda x:abs(x["score"]),reverse=True)[:5],"timestamp":datetime.now().isoformat()}
+    return {"mood_score":round(mood,3),
+            "mood_label":"BULLISH 📈" if mood>0.1 else("BEARISH 📉" if mood<-0.1 else "NEUTRAL ➡"),
+            "prediction":"Nifty likely to open HIGHER" if mood>0.1 else("Nifty likely LOWER" if mood<-0.1 else "Direction uncertain"),
+            "breakdown":{"bullish":bull,"bearish":bear,"neutral":neut},
+            "top_headlines":sorted(scored,key=lambda x:abs(x["score"]),reverse=True)[:5],
+            "timestamp":datetime.now().isoformat()}
 
 @app.post("/api/ai/chat")
 async def ai_chat(request:dict):
     messages = request.get("messages",[])
     language = request.get("language","english")
+
     market_context = ""
     try:
         async with httpx.AsyncClient(timeout=8) as c:
@@ -1096,6 +1100,7 @@ async def ai_chat(request:dict):
             market_context += f"Bitcoin: Rs.{btc:,.0f} ({btc_chg:+.1f}% today). Ethereum: Rs.{eth:,.0f}. "
     except:
         pass
+
     try:
         async with httpx.AsyncClient(timeout=8) as c:
             r = await c.get("https://query1.finance.yahoo.com/v8/finance/chart/^NSEI",
@@ -1105,50 +1110,79 @@ async def ai_chat(request:dict):
             market_context += f"Nifty 50: {curr:,.2f} ({chg:+.1f}% today). "
     except:
         pass
+
     market_context += f"RBI Repo Rate: 6.00%. USD/INR: Rs.83.47. Date: {datetime.now().strftime('%d %B %Y')}."
+  
     last_msg = messages[-1]["content"].lower() if messages else ""
     stock_data = ""
-    common_stocks = {"reliance":"RELIANCE","tcs":"TCS","infosys":"INFY","infy":"INFY","hdfc":"HDFCBANK","hdfcbank":"HDFCBANK","icici":"ICICIBANK","sbi":"SBIN","wipro":"WIPRO","bajaj":"BAJFINANCE","kotak":"KOTAKBANK","axis":"AXISBANK","maruti":"MARUTI","tatamotors":"TATAMOTORS","itc":"ITC","lt":"LT","ongc":"ONGC","airtel":"BHARTIARTL","titan":"TITAN","nestle":"NESTLEIND"}
-    for name, sym in common_stocks.items():
+    stocks = {"reliance":"RELIANCE","tcs":"TCS","infosys":"INFY","infy":"INFY",
+              "hdfc":"HDFCBANK","hdfcbank":"HDFCBANK","icici":"ICICIBANK",
+              "sbi":"SBIN","wipro":"WIPRO","bajaj":"BAJFINANCE","kotak":"KOTAKBANK",
+              "axis":"AXISBANK","maruti":"MARUTI","tatamotors":"TATAMOTORS",
+              "itc":"ITC","lt":"LT","ongc":"ONGC","airtel":"BHARTIARTL",
+              "titan":"TITAN","nestle":"NESTLEIND","sunpharma":"SUNPHARMA",
+              "ntpc":"NTPC","adani":"ADANIPORTS"}
+    for name, sym in stocks.items():
         if name in last_msg:
             try:
                 async with httpx.AsyncClient(timeout=8) as c:
-                    r = await c.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}.NS",
-                        params={"interval":"1d","range":"2d"},headers={"User-Agent":"Mozilla/5.0"})
-                    closes = r.json()["chart"]["result"][0]["indicators"]["quote"][0]["close"]
+                    r = await c.get(
+                        f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}.NS",
+                        params={"interval":"1d","range":"2d"},
+                        headers={"User-Agent":"Mozilla/5.0"})
+                    result = r.json()["chart"]["result"][0]
+                    closes = result["indicators"]["quote"][0]["close"]
                     curr=closes[-1]; prev=closes[-2]; chg=((curr-prev)/prev)*100
-                    meta = r.json()["chart"]["result"][0]["meta"]
-                    stock_data = f"LIVE NSE DATA for {sym}: Rs.{curr:,.2f} ({chg:+.2f}% today). 52W High: Rs.{meta.get('fiftyTwoWeekHigh',0):,.2f}, 52W Low: Rs.{meta.get('fiftyTwoWeekLow',0):,.2f}. "
+                    meta = result["meta"]
+                    stock_data = (f"LIVE NSE: {sym} = Rs.{curr:,.2f} "
+                                 f"({chg:+.2f}% today). "
+                                 f"52W High: Rs.{meta.get('fiftyTwoWeekHigh',0):,.2f}, "
+                                 f"52W Low: Rs.{meta.get('fiftyTwoWeekLow',0):,.2f}.")
             except:
                 pass
             break
-    system_prompt = f"""You are FinAI, an intelligent Indian financial AI with LIVE market data access.
 
-LIVE MARKET DATA:
+    system = f"""You are FinAI, an intelligent Indian financial AI with LIVE market data.
+
+LIVE DATA RIGHT NOW:
 {market_context}
 {stock_data}
 
 RULES:
-1. ALWAYS answer directly with actual numbers from live data above
-2. NEVER say check elsewhere, I dont have access, or I cant provide
-3. Be friendly and conversational like a knowledgeable friend
-4. Use Rs. for prices, Lakh and Crore for large numbers
-5. Give specific actionable advice with brief risk disclaimer
-6. Reply in {language}
-7. Keep responses concise 3-5 sentences unless detailed analysis needed
-8. If stock data is provided above use those exact numbers in your answer"""
+1. Always answer directly using the live data above
+2. Never say check elsewhere or I dont have access
+3. Be friendly like a knowledgeable friend
+4. Use Rs. Lakh Crore for Indian numbers
+5. Keep answers to 3-5 sentences
+6. Add brief risk disclaimer for investment advice
+7. Reply in {language}"""
 
     if not GROQ_KEY:
-        return {"reply":f"FinAI is live! Current market: {market_context} Add GROQ_API_KEY in Render Environment for full AI chat!","engine":"no key"}
+        return {"reply": f"FinAI here! Live data: {market_context} Please add GROQ_API_KEY in Render Environment to enable full AI responses!","engine":"no key"}
+
     try:
         async with httpx.AsyncClient(timeout=30) as c:
-            r = await c.post("https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization":f"Bearer {GROQ_KEY}","Content-Type":"application/json"},
-                json={"model":"llama3-8b-8192","messages":[{"role":"system","content":system_prompt},*messages[-8:]],"max_tokens":800,"temperature":0.7})
-            reply = r.json()["choices"][0]["message"]["content"]
+            r = await c.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization":f"Bearer {GROQ_KEY}",
+                         "Content-Type":"application/json"},
+                json={"model":"llama3-8b-8192",
+                      "messages":[{"role":"system","content":system},
+                                  *messages[-8:]],
+                      "max_tokens":800,"temperature":0.7})
+            response_data = r.json()
+
+            if "choices" not in response_data:
+                error_msg = response_data.get("error",{}).get("message","Unknown Groq error")
+                return {"reply": f"AI service error: {error_msg}. Please check your GROQ_API_KEY in Render Environment settings.","engine":"groq_error"}
+
+            reply = response_data["choices"][0]["message"]["content"]
             return {"reply":reply,"engine":"Groq/Llama3","cost":"Rs.0"}
+
+    except httpx.TimeoutException:
+        return {"reply":"Request timed out. Please try again!","engine":"timeout"}
     except Exception as e:
-        return {"reply":f"AI error: {str(e)[:80]}. Try again!","engine":"error"}
+        return {"reply":f"Connection error: {str(e)[:100]}. Try again!","engine":"error"}
 
 @app.post("/api/financial-health-score")
 async def fhs(request:dict):
@@ -1160,7 +1194,11 @@ async def upia(request:dict):
 
 @app.get("/api/rbi/msme-schemes")
 async def msme():
-    return {"schemes":[{"name":"MUDRA Shishu","max_loan":"Rs.50,000","portal":"mudra.org.in"},{"name":"MUDRA Kishore","max_loan":"Rs.5 Lakh","portal":"mudra.org.in"},{"name":"MUDRA Tarun","max_loan":"Rs.20 Lakh","portal":"mudra.org.in"},{"name":"CGTMSE","max_loan":"Rs.5 Crore","portal":"cgtmse.in"}]}
+    return {"schemes":[
+        {"name":"MUDRA Shishu","max_loan":"Rs.50,000","portal":"mudra.org.in"},
+        {"name":"MUDRA Kishore","max_loan":"Rs.5 Lakh","portal":"mudra.org.in"},
+        {"name":"MUDRA Tarun","max_loan":"Rs.20 Lakh","portal":"mudra.org.in"},
+        {"name":"CGTMSE","max_loan":"Rs.5 Crore","portal":"cgtmse.in"}]}
 
 @app.get("/api/crypto/india-tax-guide")
 async def tax():
