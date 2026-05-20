@@ -1166,7 +1166,7 @@ RULES:
                 "https://api.groq.com/openai/v1/chat/completions",
                 headers={"Authorization":f"Bearer {GROQ_KEY}",
                          "Content-Type":"application/json"},
-                json={"model":"llama3-8b-8192",
+                json={"model":"llama-3.3-70b-versatile",
                       "messages":[{"role":"system","content":system},
                                   *messages[-8:]],
                       "max_tokens":800,"temperature":0.7})
