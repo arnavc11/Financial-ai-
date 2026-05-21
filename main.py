@@ -633,8 +633,16 @@ function startRecognition(inputId, statusId, tab) {
         statusEl.textContent = '✅ Got: "' + t + '"';
         stopVoice();
         setTimeout(() => sendMsg(tab), 400);
-      };
-      recognition.onerror = (e) => {
+      };recognition.onerror = (e) => {
+  const msgs = {
+    'not-allowed':'❌ Allow microphone: tap the 🔒 icon in address bar → Site Settings → Microphone → Allow',
+    'no-speech':'❌ No speech heard. Try again.',
+    'network':'❌ Network issue. Try again.',
+    'aborted':''
+  };
+  document.getElementById(statusId).textContent = msgs[e.error] || '❌ Error: ' + e.error;
+  stopVoice();
+};
         const msgs = {
           'not-allowed': '❌ Microphone blocked. Allow mic in browser settings.',
           'no-speech': '❌ No speech detected. Try again.',
@@ -652,7 +660,10 @@ function startRecognition(inputId, statusId, tab) {
     });
 }
 
-function toggleVoice() { startRecognition('chatInput','voiceStatus','chat'); }
+function toggleVoice() {
+  document.getElementById('voiceStatus').textContent = '🎤 Requesting mic...';
+  startRecognition('chatInput','voiceStatus','chat');
+}
 function toggleVoiceForTab(tab) {
   const inputId = tab + 'Input';
   const statusId = tab + 'VoiceStatus';
