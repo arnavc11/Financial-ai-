@@ -658,7 +658,7 @@ function startRecognition(inputId, statusId, tab) {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new SR();
       recognition.lang = LANG_CODES[currentLang] || 'en-IN';
-      recognition.continuous = false;
+      recognition.continuous = true;
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
       recognition.onstart = () => {
@@ -675,14 +675,48 @@ function startRecognition(inputId, statusId, tab) {
         if(vBtn) { vBtn.textContent = '⏹️'; vBtn.classList.add('recording'); }
       };
       recognition.onresult = (e) => {
+
+    try {
+
         const transcript = e.results[0][0].transcript;
+
+        console.log("VOICE HEARD:", transcript);
+
+        const inputId =
+            tab === 'chat'
+            ? 'chatInput'
+            : tab + 'Input';
 
         const input = document.getElementById(inputId);
 
-        if (input) {
-          input.value = transcript;
-          input.dispatchEvent(new Event('input'));
+        if (!input) {
+            console.error("VOICE INPUT NOT FOUND:", inputId);
+            return;
         }
+
+        input.value = transcript;
+
+        input.dispatchEvent(new Event('input'));
+
+        isRecording = false;
+
+        const statusEl = document.getElementById(tab + 'VoiceStatus');
+
+        if (statusEl) {
+            statusEl.textContent = '✅ Heard: ' + transcript;
+        }
+
+        setTimeout(() => {
+            sendMsg(tab);
+        }, 500);
+
+    } catch(err) {
+
+        console.error("VOICE RESULT ERROR:", err);
+
+    }
+
+};
 
         statusEl.textContent = '✅ Heard: "' + transcript + '"';
 
@@ -693,18 +727,37 @@ function startRecognition(inputId, statusId, tab) {
         }, 500);
       };
       recognition.onerror = (e) => {
-        const msgs = {
-          'not-allowed': '❌ Microphone blocked. Allow mic in browser settings.',
-          'no-speech': '❌ No speech detected. Try again.',
-          'network': '❌ Network error. Check connection.',
-          'aborted': ''
-        };
-        statusEl.textContent = msgs[e.error] || '❌ Error: ' + e.error;
-        stopVoice();
-      };
+
+    console.error("VOICE ERROR:", e);
+
+    isRecording = false;
+
+    const statusEl = document.getElementById(tab + 'VoiceStatus');
+
+    if (statusEl) {
+        statusEl.textContent =
+            '❌ Voice error: ' + e.error;
+    }
+
+};
+        
       recognition.onend = () => {
-        isRecording = false;
-      };
+
+    console.log("VOICE ENDED");
+
+    isRecording = false;
+    activeVoiceTab = null;
+
+    const btns = ['voiceBtn','cryptoVoiceBtn','stocksVoiceBtn','sipVoiceBtn'];
+
+    btns.forEach(id => {
+        const btn = document.getElementById(id);
+
+        if (btn) {
+            btn.classList.remove('recording');
+            btn.textContent = '🎤';
+        }
+    });
       recognition.start();
     })
     .catch(err => {
@@ -722,10 +775,11 @@ function toggleVoiceForTab(tab) {
 function stopVoice() {
   isRecording = false;
 
-  if (recognition) {
-    try { recognition.stop(); } catch(e) {}
-  }
-
+  if (recognition && isRecording) {
+    try {
+        recognition.stop();
+    } catch(e) {}
+}
   const btns = ['voiceBtn','cryptoVoiceBtn','stocksVoiceBtn','sipVoiceBtn'];
 
   btns.forEach(id => {
