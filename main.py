@@ -758,6 +758,7 @@ function startRecognition(inputId, statusId, tab) {
             btn.textContent = '🎤';
         }
     });
+    };
       recognition.start();
     })
     .catch(err => {
