@@ -258,7 +258,7 @@ What would you like to know today?</div></div>
         <div class="messages" id="cryptoMessages" style="max-height:180px;overflow-y:auto;margin-bottom:8px;gap:8px;display:flex;flex-direction:column;">
           <div class="msg"><div class="avatar ai-av">₹</div>
             <div class="bubble ai-bubble" id="cryptoGreeting">Hey! Live crypto prices loaded above 🚀 Ask me anything about Bitcoin, Ethereum, crypto tax in India, or which crypto to invest in!</div></div>
-            </div>
+        </div>
         <div class="quick-pills">
           <button class="pill" onclick="askInTab('Is Bitcoin a good investment in India?','crypto')">Bitcoin good buy?</button>
           <button class="pill" onclick="askInTab('Crypto tax rules India 2025 explained simply','crypto')">Crypto Tax</button>
@@ -412,7 +412,7 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-    <!-- UPI ANALYZER TAB -->
+     <!-- UPI ANALYZER TAB -->
     <div class="content" id="tab-upi">
       <div class="card">
         <h3>💳 UPI Budget Analyzer — Find Where Your Money Goes</h3>
@@ -601,13 +601,17 @@ async function sendMsg(tab) {
   if (btnId) document.getElementById(btnId).disabled = true;
 
   try {
-    const res = await fetch('/api/ai/chat', {
+    const res = await fetch(window.location.origin + '/api/ai/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         messages: [contextMsg, ...chatHistories[tab].slice(-8)],
         language: currentLang
       })
     });
+    if (!res.ok) {
+      throw new Error('Server returned ' + res.status);
+    }
+
     const data = await res.json();
     removeTypingFrom(msgId);
     const reply = data.reply || 'Sorry, could not process that. Try again!';
@@ -616,8 +620,8 @@ async function sendMsg(tab) {
     if (chatHistories[tab].length > 16) chatHistories[tab] = chatHistories[tab].slice(-16);
   } catch(e) {
     removeTypingFrom(msgId);
-    console.error(e);
-    addBubble(msgId, 'Connection/API error. Check backend.');
+    console.error('AI FETCH ERROR:', e);
+    addBubble(msgId, 'Connection/API error: ' + e.message);
   }
   if (btnId) document.getElementById(btnId).disabled = false;
 }
@@ -717,9 +721,20 @@ function toggleVoiceForTab(tab) {
 
 function stopVoice() {
   isRecording = false;
-  if (recognition) try { recognition.stop(); } catch(e) {}
-  document.getElementById('voiceBtn').classList.remove('recording');
-  document.getElementById('voiceBtn').textContent = '🎤';
+
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+  }
+
+  const btns = ['voiceBtn','cryptoVoiceBtn','stocksVoiceBtn','sipVoiceBtn'];
+
+  btns.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.classList.remove('recording');
+      btn.textContent = '🎤';
+    }
+  });
   setTimeout(() => {
     ['voiceStatus','cryptoVoiceStatus','stocksVoiceStatus','sipVoiceStatus'].forEach(id => {
       const el = document.getElementById(id); if (el) el.textContent = '';
