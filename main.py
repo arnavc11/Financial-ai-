@@ -292,7 +292,7 @@ What would you like to know today?</div></div>
       </div>
       <div class="card">
         <h3>💬 Chat about Stocks</h3>
-        <div class="messages" id="stockMessages" style="max-height:160px;overflow-y:auto;margin-bottom:8px;gap:8px;display:flex;flex-direction:column;">
+        <div class="messages" id="stocksMessages" style="max-height:160px;overflow-y:auto;margin-bottom:8px;gap:8px;display:flex;flex-direction:column;">
           <div class="msg"><div class="avatar ai-av">₹</div>
             <div class="bubble ai-bubble">Hey! 📈 I can analyse any NSE/BSE stock for you. Search above or ask me anything about the Indian stock market!</div></div>
         </div>
