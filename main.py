@@ -245,7 +245,7 @@ What would you like to know today?</div></div>
       </div>
     </div>
 
-     <!-- CRYPTO TAB -->
+    <!-- CRYPTO TAB -->
     <div class="content" id="tab-crypto">
       <div class="crypto-grid" id="cryptoGrid">
         <div class="crypto-card"><div class="coin-name">₿ Bitcoin</div><div class="coin-price" id="btcPrice">Loading...</div><div class="coin-chg" id="btcChg"></div><div class="tax-note">🇮🇳 30% tax on profits + 1% TDS above ₹10,000</div></div>
@@ -258,7 +258,7 @@ What would you like to know today?</div></div>
         <div class="messages" id="cryptoMessages" style="max-height:180px;overflow-y:auto;margin-bottom:8px;gap:8px;display:flex;flex-direction:column;">
           <div class="msg"><div class="avatar ai-av">₹</div>
             <div class="bubble ai-bubble" id="cryptoGreeting">Hey! Live crypto prices loaded above 🚀 Ask me anything about Bitcoin, Ethereum, crypto tax in India, or which crypto to invest in!</div></div>
-        </div>
+            </div>
         <div class="quick-pills">
           <button class="pill" onclick="askInTab('Is Bitcoin a good investment in India?','crypto')">Bitcoin good buy?</button>
           <button class="pill" onclick="askInTab('Crypto tax rules India 2025 explained simply','crypto')">Crypto Tax</button>
@@ -267,9 +267,9 @@ What would you like to know today?</div></div>
           <button class="pill" onclick="askInTab('Should I invest in Solana?','crypto')">Solana?</button>
         </div>
         <div class="input-area" style="padding-top:8px;">
-          <button class="btn-voice" onclick="toggleVoiceForTab('crypto')" title="Speak">🎤</button>
+          <button class="btn-voice" id="cryptoVoiceBtn" onclick="toggleVoiceForTab('crypto')" title="Speak">🎤</button>
           <textarea class="chat-input" id="cryptoInput" rows="1" placeholder="Ask anything about crypto..." onkeydown="handleTabKey(event,'crypto')" oninput="autoResize(this)"></textarea>
-          <button class="btn-send" onclick="sendMsg('crypto')">Send</button>
+          <button class="btn-send" id="cryptoSendBtn" onclick="sendMsg('crypto')">Send</button>
         </div>
         <div class="voice-status" id="cryptoVoiceStatus"></div>
       </div>
@@ -303,9 +303,9 @@ What would you like to know today?</div></div>
           <button class="pill" onclick="askInTab('What is PE ratio and how to use it?','stocks')">PE Ratio?</button>
         </div>
         <div class="input-area" style="padding-top:8px;">
-          <button class="btn-voice" onclick="toggleVoiceForTab('stocks')" title="Speak">🎤</button>
+          <button class="btn-voice" id="stocksVoiceBtn" onclick="toggleVoiceForTab('stocks')" title="Speak">🎤</button>
           <textarea class="chat-input" id="stocksInput" rows="1" placeholder="Ask about any stock or the market..." onkeydown="handleTabKey(event,'stocks')" oninput="autoResize(this)"></textarea>
-          <button class="btn-send" onclick="sendMsg('stocks')">Send</button>
+          <button class="btn-send" id="stocksSendBtn" onclick="sendMsg('stocks')">Send</button>
         </div>
         <div class="voice-status" id="stocksVoiceStatus"></div>
       </div>
@@ -342,9 +342,9 @@ What would you like to know today?</div></div>
           <button class="pill" onclick="askInTab('Direct vs regular mutual fund difference','sip')">Direct vs Regular</button>
         </div>
         <div class="input-area" style="padding-top:8px;">
-          <button class="btn-voice" onclick="toggleVoiceForTab('sip')" title="Speak">🎤</button>
+          <button class="btn-voice" id="sipVoiceBtn" onclick="toggleVoiceForTab('sip')" title="Speak">🎤</button>
           <textarea class="chat-input" id="sipInput" rows="1" placeholder="Ask about SIP, mutual funds..." onkeydown="handleTabKey(event,'sip')" oninput="autoResize(this)"></textarea>
-          <button class="btn-send" onclick="sendMsg('sip')">Send</button>
+          <button class="btn-send" id="sipSendBtn" onclick="sendMsg('sip')">Send</button>
         </div>
         <div class="voice-status" id="sipVoiceStatus"></div>
       </div>
@@ -590,7 +590,14 @@ async function sendMsg(tab) {
 
   chatHistories[tab].push({role:'user', content:text});
   showTypingIn(msgId);
-  const btnId = tab === 'chat' ? 'sendBtn' : null;
+  const btnMap = {
+    chat: 'sendBtn',
+    crypto: 'cryptoSendBtn',
+    stocks: 'stocksSendBtn',
+    sip: 'sipSendBtn'
+  };
+
+  const btnId = btnMap[tab];
   if (btnId) document.getElementById(btnId).disabled = true;
 
   try {
@@ -609,7 +616,8 @@ async function sendMsg(tab) {
     if (chatHistories[tab].length > 16) chatHistories[tab] = chatHistories[tab].slice(-16);
   } catch(e) {
     removeTypingFrom(msgId);
-    addBubble(msgId, 'Connection error. Please try again.');
+    console.error(e);
+    addBubble(msgId, 'Connection/API error. Check backend.');
   }
   if (btnId) document.getElementById(btnId).disabled = false;
 }
@@ -647,19 +655,38 @@ function startRecognition(inputId, statusId, tab) {
       recognition = new SR();
       recognition.lang = LANG_CODES[currentLang] || 'en-IN';
       recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
       recognition.onstart = () => {
         isRecording = true; activeVoiceTab = tab;
         statusEl.textContent = '🎤 Listening... Speak now!';
-        const vBtn = document.getElementById('voiceBtn');
+        const voiceBtnMap = {
+          chat: 'voiceBtn',
+          crypto: 'cryptoVoiceBtn',
+          stocks: 'stocksVoiceBtn',
+          sip: 'sipVoiceBtn'
+        };
+
+        const vBtn = document.getElementById(voiceBtnMap[tab]);
         if(vBtn) { vBtn.textContent = '⏹️'; vBtn.classList.add('recording'); }
       };
       recognition.onresult = (e) => {
-        const t = e.results[0][0].transcript;
-        document.getElementById(inputId).value = t;
-        statusEl.textContent = '✅ Got: "' + t + '"';
-        stopVoice();
-        setTimeout(() => sendMsg(tab), 400);
+        const transcript = e.results[0][0].transcript;
+
+        const input = document.getElementById(inputId);
+
+        if (input) {
+          input.value = transcript;
+          input.dispatchEvent(new Event('input'));
+        }
+
+        statusEl.textContent = '✅ Heard: "' + transcript + '"';
+
+        isRecording = false;
+
+        setTimeout(() => {
+          sendMsg(tab);
+        }, 500);
       };
       recognition.onerror = (e) => {
         const msgs = {
@@ -671,7 +698,9 @@ function startRecognition(inputId, statusId, tab) {
         statusEl.textContent = msgs[e.error] || '❌ Error: ' + e.error;
         stopVoice();
       };
-      recognition.onend = () => stopVoice();
+      recognition.onend = () => {
+        isRecording = false;
+      };
       recognition.start();
     })
     .catch(err => {
@@ -1052,7 +1081,7 @@ async def stock_quote(symbol:str):
         return {"symbol":symbol.upper(),"current_price":round(curr,2),"formatted":f"Rs.{curr:,.2f}","change_pct":round(chg,2),"direction":"up" if chg>=0 else "down","52w_high":round(d["meta"].get("fiftyTwoWeekHigh",0),2),"52w_low":round(d["meta"].get("fiftyTwoWeekLow",0),2)}
     except Exception as e:
         return JSONResponse(status_code=503,content={"error":str(e)})
-      
+
 @app.get("/api/mf/sip-calculator")
 async def sip_calculator(monthly_amount:float=5000,annual_return_pct:float=12.0,years:int=10):
     r=(annual_return_pct/100)/12; n=years*12
@@ -1162,4 +1191,3 @@ async def tax():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT",10000))
     uvicorn.run("main:app",host="0.0.0.0",port=port)
-                             
