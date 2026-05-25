@@ -758,10 +758,10 @@ function startRecognition(inputId, statusId, tab) {
             btn.textContent = '🎤';
         }
     });
-    };
-      recognition.start();
-    })
-    .catch(err => {
+ };
+ recognition.start();
+ }) 
+      .catch(err => {
       statusEl.textContent = '❌ Microphone blocked! Go to browser Settings → Site Settings → Microphone → Allow for this site.';
     });
 }
