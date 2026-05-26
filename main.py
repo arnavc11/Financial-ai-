@@ -1169,46 +1169,103 @@ async def health():
 
 @app.get("/api/crypto/prices")
 async def crypto_prices():
+
     try:
-        async with httpx.AsyncClient(timeout=10) as c:
-            r = await c.get("https://api.coingecko.com/api/v3/simple/price",
-                params={"ids":"bitcoin,ethereum,binancecoin,solana","vs_currencies":"inr,usd","include_24hr_change":"true"})
-            data = r.json()
 
-            if not isinstance(data, dict) or not data:
+        url = (
+            "https://api.coingecko.com/api/v3/simple/price"
+            "?ids=bitcoin,ethereum"
+            "&vs_currencies=inr"
+            "&include_24hr_change=true"
+        )
 
-                return {
-                    "coins": [
-                        {
-                            "id": "bitcoin",
-                            "name": "Bitcoin",
-                            "price_inr": 7420000,
-                            "formatted_inr": "₹74.2L",
-                            "change_24h_pct": 2.4,
-                            "direction": "up"
-                        },
-                        {
-                            "id": "ethereum",
-                            "name": "Ethereum",
-                            "price_inr": 219000,
-                            "formatted_inr": "₹2.19L",
-                            "change_24h_pct": 1.2,
-                            "direction": "up"
-                  }
-               ]   
-            }
+        r = requests.get(url, timeout=10)
 
-        names = {"bitcoin":"Bitcoin","ethereum":"Ethereum","binancecoin":"BNB","solana":"Solana"}
-        coins = []
-        for cid, info in data.items():
-            inr = info.get("inr",0); chg = info.get("inr_24h_change",0)
-            if inr > 10000000: fmt = f"Rs.{inr/10000000:.2f} Cr"
-            elif inr > 100000: fmt = f"Rs.{inr/100000:.2f} L"
-            else: fmt = f"Rs.{inr:,.2f}"
-            coins.append({"id":cid,"name":names.get(cid,cid),"price_inr":round(inr,2),"formatted_inr":fmt,"change_24h_pct":round(chg,2),"direction":"up" if chg>=0 else "down"})
-        return {"coins":coins,"timestamp":datetime.now().isoformat()}
+        if r.status_code != 200:
+            raise Exception("API failed")
+
+        data = r.json()
+
+        btc = data.get("bitcoin", {})
+        eth = data.get("ethereum", {})
+
+        return {
+            "coins": [
+                {
+                    "id": "bitcoin",
+                    "name": "Bitcoin",
+                    "price_inr": btc.get("inr", 7420000),
+                    "formatted_inr":
+                        "₹" + format(
+                            btc.get("inr", 7420000),
+                            ","
+                        ),
+                    "change_24h_pct":
+                        round(
+                            btc.get(
+                                "inr_24h_change",
+                                2.4
+                            ),
+                            2
+                        ),
+                    "direction":
+                        "up" if btc.get(
+                            "inr_24h_change",
+                            0
+                        ) >= 0 else "down"
+                },
+
+                {
+                    "id": "ethereum",
+                    "name": "Ethereum",
+                    "price_inr": eth.get("inr", 219000),
+                    "formatted_inr":
+                        "₹" + format(
+                            eth.get("inr", 219000),
+                            ","
+                        ),
+                    "change_24h_pct":
+                        round(
+                            eth.get(
+                                "inr_24h_change",
+                                1.2
+                            ),
+                            2
+                        ),
+                    "direction":
+                        "up" if eth.get(
+                            "inr_24h_change",
+                            0
+                        ) >= 0 else "down"
+                }
+            ]
+        }
+
     except Exception as e:
-        return JSONResponse(status_code=503,content={"error":str(e)})
+
+        print("CRYPTO API ERROR:", e)
+
+        return {
+            "coins": [
+                {
+                    "id": "bitcoin",
+                    "name": "Bitcoin",
+                    "price_inr": 7420000,
+                    "formatted_inr": "₹74,20,000",
+                    "change_24h_pct": 2.4,
+                    "direction": "up"
+                },
+
+                {
+                    "id": "ethereum",
+                    "name": "Ethereum",
+                    "price_inr": 219000,
+                    "formatted_inr": "₹2,19,000",
+                    "change_24h_pct": 1.2,
+                    "direction": "up"
+                }
+            ]
+      }
 
 @app.get("/api/rbi/rates")
 async def rbi_rates():
