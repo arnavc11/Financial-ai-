@@ -253,7 +253,7 @@ What would you like to know today?</div></div>
         <div class="crypto-card"><div class="coin-name">BNB</div><div class="coin-price" id="bnbPrice">Loading...</div><div class="coin-chg" id="bnbChg"></div><div class="tax-note">🇮🇳 30% tax on profits + 1% TDS above ₹10,000</div></div>
         <div class="crypto-card"><div class="coin-name">◎ Solana</div><div class="coin-price" id="solPrice">Loading...</div><div class="coin-chg" id="solChg"></div><div class="tax-note">🇮🇳 30% tax on profits + 1% TDS above ₹10,000</div></div>
       </div>
-      <div class="card">
+       <div class="card">
         <h3>💬 Chat about Crypto — Type or Speak!</h3>
         <div class="messages" id="cryptoMessages" style="max-height:180px;overflow-y:auto;margin-bottom:8px;gap:8px;display:flex;flex-direction:column;">
           <div class="msg"><div class="avatar ai-av">₹</div>
@@ -465,28 +465,38 @@ Zomato 320"></textarea>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────────
 let currentLang = 'english';
 let chatHistories = { chat:[], crypto:[], stocks:[], sip:[] };
 let isRecording = false;
 let recognition = null;
 let activeVoiceTab = 'chat';
 
-
-// ── LIVE TICKER ────────────────────────────────────
+// ── LIVE TICKER ────────────────────────────────────────────────────
 async function loadLiveTicker() {
 
   try {
 
-    const stockRes = await fetch('/api/stocks/indices');
-    const stockData = await stockRes.json();
+    const stockRes =
+      await fetch('/api/stocks/indices');
 
-    const cryptoRes = await fetch('/api/crypto/prices');
-    const cryptoData = await cryptoRes.json();
+    const stockData =
+      await stockRes.json();
 
-    const nifty = stockData.indices?.NIFTY50 || {};
-    const sensex = stockData.indices?.SENSEX || {};
-    const bank = stockData.indices?.BANKNIFTY || {};
+    const cryptoRes =
+      await fetch('/api/crypto/prices');
+
+    const cryptoData =
+      await cryptoRes.json();
+
+    const nifty =
+      stockData.indices?.NIFTY50 || {};
+
+    const sensex =
+      stockData.indices?.SENSEX || {};
+
+    const bank =
+      stockData.indices?.BANKNIFTY || {};
 
     const btc =
       cryptoData.coins?.find(
@@ -524,7 +534,7 @@ async function loadLiveTicker() {
       'tickerText'
     ).textContent = ticker + ticker;
 
-  } catch (err) {
+  } catch(err) {
 
     console.error(
       'LIVE TICKER ERROR:',
@@ -747,23 +757,20 @@ function startRecognition(inputId, statusId, tab) {
 
           const input = document.getElementById(inputId);
 
-          if (!input) {
-            console.error("VOICE INPUT NOT FOUND:", inputId);
-            return;
-          }
+          if (!input) return;
 
           input.value = transcript;
           input.dispatchEvent(new Event('input'));
 
-          statusEl.textContent = '✅ Heard: "' + transcript + '"';
+          statusEl.textContent =
+            '✅ Heard: "' + transcript + '"';
 
           setTimeout(() => {
             sendMsg(tab);
           }, 500);
 
         } catch(err) {
-          console.error("VOICE RESULT ERROR:", err);
-          statusEl.textContent = '❌ Voice processing failed';
+          console.error(err);
         }
       };
 
@@ -815,6 +822,7 @@ function toggleVoiceForTab(tab) {
 }
 
 function stopVoice() {
+
   if (recognition) {
     try {
       recognition.stop();
@@ -847,10 +855,27 @@ async function loadCrypto() {
     data.coins.forEach(coin => {
       if (!map[coin.id]) return;
       const [pId,cId] = map[coin.id];
-      document.getElementById(pId).textContent = coin.formatted_inr;
+      document.getElementById(pId).textContent =
+        coin.formatted_inr ||
+        ('₹' + Number(
+          coin.price_inr || 0
+        ).toLocaleString('en-IN'));
+
+      const chg =
+        Number(
+          coin.change_24h_pct || 0
+        ).toFixed(2);
+
       const el = document.getElementById(cId);
-      el.textContent = (coin.change_24h_pct>=0?'▲ +':'▼ ') + coin.change_24h_pct + '% today';
-      el.className = 'coin-chg ' + (coin.change_24h_pct>=0?'up':'down');
+
+      el.textContent =
+        (chg >= 0 ? '▲ +' : '▼ ') +
+        chg +
+        '% today';
+
+      el.className =
+        'coin-chg ' +
+        (chg >= 0 ? 'up' : 'down');
     });
     const btc = data.coins.find(c=>c.id==='bitcoin');
     if (btc) {
@@ -1149,6 +1174,10 @@ async def crypto_prices():
             r = await c.get("https://api.coingecko.com/api/v3/simple/price",
                 params={"ids":"bitcoin,ethereum,binancecoin,solana","vs_currencies":"inr,usd","include_24hr_change":"true"})
             data = r.json()
+
+        if not isinstance(data, dict):
+            data = {}
+
         names = {"bitcoin":"Bitcoin","ethereum":"Ethereum","binancecoin":"BNB","solana":"Solana"}
         coins = []
         for cid, info in data.items():
@@ -1302,3 +1331,4 @@ async def tax():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT",10000))
     uvicorn.run("main:app",host="0.0.0.0",port=port)
+      
