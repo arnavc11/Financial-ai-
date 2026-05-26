@@ -792,60 +792,153 @@ function startRecognition(inputId, statusId, tab) {
       recognition.onend = () => {
 
     console.log("VOICE ENDED");
+// ── VOICE SYSTEM ───────────────────────────────────
 
-    isRecording = false;
-    activeVoiceTab = null;
+let recognition = null;
+let isRecording = false;
 
-    const btns = ['voiceBtn','cryptoVoiceBtn','stocksVoiceBtn','sipVoiceBtn'];
+function startVoice(tab) {
 
-    btns.forEach(id => {
-        const btn = document.getElementById(id);
+  try {
 
-        if (btn) {
-            btn.classList.remove('recording');
-            btn.textContent = '🎤';
+    // STOP OLD SESSION
+    if (recognition) {
+      recognition.stop();
+      recognition = null;
+    }
+
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Speech Recognition not supported");
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+
+    recognition.lang = 'en-IN';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    isRecording = true;
+
+    const inputId =
+      tab === 'chat'
+        ? 'chatInput'
+        : tab + 'Input';
+
+    const input =
+      document.getElementById(inputId);
+
+    const statusEl =
+      document.getElementById('voiceStatus');
+
+    if (statusEl) {
+      statusEl.textContent =
+        '🎤 Listening... Speak now';
+    }
+
+    recognition.onstart = () => {
+      console.log("VOICE STARTED");
+    };
+
+    recognition.onresult = (event) => {
+
+      try {
+
+        const transcript =
+          event.results[0][0].transcript;
+
+        console.log(
+          "VOICE HEARD:",
+          transcript
+        );
+
+        if (input) {
+          input.value = transcript;
+          input.dispatchEvent(
+            new Event('input')
+          );
         }
-    });
- };
- recognition.start();
- }) 
-      .catch(err => {
-      statusEl.textContent = '❌ Microphone blocked! Go to browser Settings → Site Settings → Microphone → Allow for this site.';
-    });
+
+        if (statusEl) {
+          statusEl.textContent =
+            '✅ Heard: ' + transcript;
+        }
+
+      } catch(err) {
+        console.error(
+          "VOICE RESULT ERROR:",
+          err
+        );
+      }
+    };
+
+    recognition.onerror = (event) => {
+
+      console.error(
+        "VOICE ERROR:",
+        event.error
+      );
+
+      if (statusEl) {
+        statusEl.textContent =
+          '❌ Voice error: ' +
+          event.error;
+      }
+
+      isRecording = false;
+    };
+
+    recognition.onend = () => {
+
+      console.log("VOICE ENDED");
+
+      isRecording = false;
+
+      if (statusEl) {
+        statusEl.textContent =
+          '🎤 Voice stopped';
+      }
+    };
+
+    recognition.start();
+
+  } catch(err) {
+
+    console.error(
+      "VOICE START FAILED:",
+      err
+    );
+  }
 }
 
-function toggleVoice() { startRecognition('chatInput','voiceStatus','chat'); }
-function toggleVoiceForTab(tab) {
-  const inputId = tab + 'Input';
-  const statusId = tab + 'VoiceStatus';
-  startRecognition(inputId, statusId, tab);
-}
 
 function stopVoice() {
 
-  if (recognition) {
-    try {
+  try {
+
+    if (recognition) {
       recognition.stop();
-    } catch(e) {}
+      recognition = null;
+    }
+
+  } catch(err) {
+    console.error(err);
   }
 
   isRecording = false;
-  const btns = ['voiceBtn','cryptoVoiceBtn','stocksVoiceBtn','sipVoiceBtn'];
 
-  btns.forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) {
-      btn.classList.remove('recording');
-      btn.textContent = '🎤';
-    }
-  });
-  setTimeout(() => {
-    ['voiceStatus','cryptoVoiceStatus','stocksVoiceStatus','sipVoiceStatus'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.textContent = '';
-    });
-  }, 3000);
+  const statusEl =
+    document.getElementById('voiceStatus');
+
+  if (statusEl) {
+    statusEl.textContent =
+      '🎤 Voice stopped';
+  }
 }
-
 // ── Crypto ─────────────────────────────────────────────────────────
 async function loadCrypto() {
   try {
