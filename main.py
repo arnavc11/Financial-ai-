@@ -1175,28 +1175,28 @@ async def crypto_prices():
                 params={"ids":"bitcoin,ethereum,binancecoin,solana","vs_currencies":"inr,usd","include_24hr_change":"true"})
             data = r.json()
 
-if not isinstance(data, dict) or not data:
+            if not isinstance(data, dict) or not data:
 
-    return {
-        "coins": [
-            {
-                "id": "bitcoin",
-                "name": "Bitcoin",
-                "price_inr": 7420000,
-                "formatted_inr": "₹74.2L",
-                "change_24h_pct": 2.4,
-                "direction": "up"
-            },
-            {
-                "id": "ethereum",
-                "name": "Ethereum",
-                "price_inr": 219000,
-                "formatted_inr": "₹2.19L",
-                "change_24h_pct": 1.2,
-                "direction": "up"
+                return {
+                    "coins": [
+                        {
+                            "id": "bitcoin",
+                            "name": "Bitcoin",
+                            "price_inr": 7420000,
+                            "formatted_inr": "₹74.2L",
+                            "change_24h_pct": 2.4,
+                            "direction": "up"
+                        },
+                        {
+                            "id": "ethereum",
+                            "name": "Ethereum",
+                            "price_inr": 219000,
+                            "formatted_inr": "₹2.19L",
+                            "change_24h_pct": 1.2,
+                            "direction": "up"
+                  }
+               ]   
             }
-        ]
-    }
 
         names = {"bitcoin":"Bitcoin","ethereum":"Ethereum","binancecoin":"BNB","solana":"Solana"}
         coins = []
