@@ -714,152 +714,145 @@ function handleKey(e) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sen
 function handleTabKey(e, tab) { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg(tab);} }
 function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,90)+'px'; }
 
-// ── VOICE SYSTEM ───────────────────────────────────
+// ── Voice ──────────────────────────────────────────
 
-let recognition = null;
-let isRecording = false;
+const LANG_CODES = {
+  english:'en-IN',
+  hindi:'hi-IN',
+  tamil:'ta-IN',
+  telugu:'te-IN',
+  bengali:'bn-IN',
+  marathi:'mr-IN',
+  gujarati:'gu-IN',
+  kannada:'kn-IN'
+};
 
-function startVoice(tab) {
+function toggleVoice() {
+  startRecognition('chatInput','voiceStatus','chat');
+}
 
-  try {
+function toggleVoiceForTab(tab) {
 
-    // STOP OLD SESSION
-    if (recognition) {
-      recognition.stop();
-      recognition = null;
-    }
+  const inputId = tab + 'Input';
+  const statusId = tab + 'VoiceStatus';
 
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
+  startRecognition(
+    inputId,
+    statusId,
+    tab
+  );
+}
 
-    if (!SpeechRecognition) {
-      alert("Speech Recognition not supported");
-      return;
-    }
+function startRecognition(inputId, statusId, tab) {
 
-    recognition = new SpeechRecognition();
+  const statusEl =
+    document.getElementById(statusId);
 
-    recognition.lang = 'en-IN';
-    recognition.interimResults = false;
-    recognition.continuous = false;
+  if (
+    !('webkitSpeechRecognition' in window ||
+    'SpeechRecognition' in window)
+  ) {
+    statusEl.textContent =
+      '⚠️ Voice not supported';
+    return;
+  }
+
+  if (isRecording) {
+    stopVoice();
+    return;
+  }
+
+  const SR =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  recognition = new SR();
+
+  recognition.lang =
+    LANG_CODES[currentLang] || 'en-IN';
+
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
 
     isRecording = true;
 
-    const inputId =
-      tab === 'chat'
-        ? 'chatInput'
-        : tab + 'Input';
+    statusEl.textContent =
+      '🎤 Listening...';
+
+  };
+
+  recognition.onresult = (e) => {
+
+    const transcript =
+      e.results[0][0].transcript;
 
     const input =
       document.getElementById(inputId);
 
-    const statusEl =
-      document.getElementById('voiceStatus');
-
-    if (statusEl) {
-      statusEl.textContent =
-        '🎤 Listening... Speak now';
+    if (input) {
+      input.value = transcript;
+      input.dispatchEvent(
+        new Event('input')
+      );
     }
 
-    recognition.onstart = () => {
-      console.log("VOICE STARTED");
-    };
+    statusEl.textContent =
+      '✅ Heard: ' + transcript;
 
-    recognition.onresult = (event) => {
+    setTimeout(() => {
+      sendMsg(tab);
+    }, 500);
+  };
 
-      try {
+  recognition.onerror = (e) => {
 
-        const transcript =
-          event.results[0][0].transcript;
+    statusEl.textContent =
+      '❌ ' + e.error;
 
-        console.log(
-          "VOICE HEARD:",
-          transcript
-        );
+    isRecording = false;
+  };
 
-        if (input) {
-          input.value = transcript;
-          input.dispatchEvent(
-            new Event('input')
-          );
-        }
+  recognition.onend = () => {
 
-        if (statusEl) {
-          statusEl.textContent =
-            '✅ Heard: ' + transcript;
-        }
+    isRecording = false;
 
-      } catch(err) {
-        console.error(
-          "VOICE RESULT ERROR:",
-          err
-        );
-      }
-    };
+    statusEl.textContent =
+      '🎤 Voice stopped';
+  };
 
-    recognition.onerror = (event) => {
-
-      console.error(
-        "VOICE ERROR:",
-        event.error
-      );
-
-      if (statusEl) {
-        statusEl.textContent =
-          '❌ Voice error: ' +
-          event.error;
-      }
-
-      isRecording = false;
-    };
-
-    recognition.onend = () => {
-
-      console.log("VOICE ENDED");
-
-      isRecording = false;
-
-      if (statusEl) {
-        statusEl.textContent =
-          '🎤 Voice stopped';
-      }
-    };
-
-    recognition.start();
-
-  } catch(err) {
-
-    console.error(
-      "VOICE START FAILED:",
-      err
-    );
-  }
+  recognition.start();
 }
-
 
 function stopVoice() {
 
-  try {
+  if (recognition) {
 
-    if (recognition) {
+    try {
       recognition.stop();
-      recognition = null;
-    }
+    } catch(e) {}
 
-  } catch(err) {
-    console.error(err);
   }
 
   isRecording = false;
 
-  const statusEl =
-    document.getElementById('voiceStatus');
+  [
+    'voiceStatus',
+    'cryptoVoiceStatus',
+    'stocksVoiceStatus',
+    'sipVoiceStatus'
+  ].forEach(id => {
 
-  if (statusEl) {
-    statusEl.textContent =
-      '🎤 Voice stopped';
-  }
+    const el =
+      document.getElementById(id);
+
+    if (el) {
+      el.textContent =
+        '🎤 Voice stopped';
+    }
+
+  });
 }
 // ── Crypto ─────────────────────────────────────────────────────────
 async function loadCrypto() {
