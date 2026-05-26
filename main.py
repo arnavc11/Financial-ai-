@@ -465,16 +465,78 @@ Zomato 320"></textarea>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────
 let currentLang = 'english';
 let chatHistories = { chat:[], crypto:[], stocks:[], sip:[] };
 let isRecording = false;
 let recognition = null;
 let activeVoiceTab = 'chat';
 
-// ── Ticker ─────────────────────────────────────────────────────────
-const td = 'NIFTY 50: 22,147 ▲0.84%  •  SENSEX: 73,088 ▲0.76%  •  BANK NIFTY: 47,321 ▲1.12%  •  BTC/INR: ₹74.2L ▲3.45%  •  ETH/INR: ₹2.19L ▲1.92%  •  GOLD: ₹71,240 ▲0.22%  •  USD/INR: ₹83.47  •  REPO: 6.00%  •  ';
-document.getElementById('tickerText').textContent = td + td;
+
+// ── LIVE TICKER ────────────────────────────────────
+async function loadLiveTicker() {
+
+  try {
+
+    const stockRes = await fetch('/api/stocks/indices');
+    const stockData = await stockRes.json();
+
+    const cryptoRes = await fetch('/api/crypto/prices');
+    const cryptoData = await cryptoRes.json();
+
+    const nifty = stockData.indices?.NIFTY50 || {};
+    const sensex = stockData.indices?.SENSEX || {};
+    const bank = stockData.indices?.BANKNIFTY || {};
+
+    const btc =
+      cryptoData.coins?.find(
+        c => c.id === 'bitcoin'
+      ) || {};
+
+    const eth =
+      cryptoData.coins?.find(
+        c => c.id === 'ethereum'
+      ) || {};
+
+    const ticker = `
+      NIFTY 50: ${nifty.formatted || '--'}
+      ${nifty.direction === 'up' ? '▲' : '▼'}
+      ${nifty.change_pct || 0}%  •
+
+      SENSEX: ${sensex.formatted || '--'}
+      ${sensex.direction === 'up' ? '▲' : '▼'}
+      ${sensex.change_pct || 0}%  •
+
+      BANK NIFTY: ${bank.formatted || '--'}
+      ${bank.direction === 'up' ? '▲' : '▼'}
+      ${bank.change_pct || 0}%  •
+
+      BTC/INR: ${btc.formatted_inr || '--'}
+      ${btc.change_24h_pct >= 0 ? '▲' : '▼'}
+      ${btc.change_24h_pct || 0}%  •
+
+      ETH/INR: ${eth.formatted_inr || '--'}
+      ${eth.change_24h_pct >= 0 ? '▲' : '▼'}
+      ${eth.change_24h_pct || 0}%  •
+    `;
+
+    document.getElementById(
+      'tickerText'
+    ).textContent = ticker + ticker;
+
+  } catch (err) {
+
+    console.error(
+      'LIVE TICKER ERROR:',
+      err
+    );
+
+  }
+}
+
+loadLiveTicker();
+
+setInterval(loadLiveTicker, 30000);
 
 // ── Tab switching ──────────────────────────────────────────────────
 function switchTab(tab, btn) {
@@ -675,57 +737,36 @@ function startRecognition(inputId, statusId, tab) {
         if(vBtn) { vBtn.textContent = '⏹️'; vBtn.classList.add('recording'); }
       };
       recognition.onresult = (e) => {
+        try {
+          let transcript = '';
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            transcript += e.results[i][0].transcript;
+          }
 
-    try {
+          console.log("VOICE HEARD:", transcript);
 
-        const transcript = e.results[0][0].transcript;
+          const input = document.getElementById(inputId);
 
-        console.log("VOICE HEARD:", transcript);
-
-        const inputId =
-            tab === 'chat'
-            ? 'chatInput'
-            : tab + 'Input';
-
-        const input = document.getElementById(inputId);
-
-        if (!input) {
+          if (!input) {
             console.error("VOICE INPUT NOT FOUND:", inputId);
             return;
-        }
+          }
 
-        input.value = transcript;
+          input.value = transcript;
+          input.dispatchEvent(new Event('input'));
 
-        input.dispatchEvent(new Event('input'));
+          statusEl.textContent = '✅ Heard: "' + transcript + '"';
 
-        isRecording = false;
-
-        const statusEl = document.getElementById(tab + 'VoiceStatus');
-
-        if (statusEl) {
-            statusEl.textContent = '✅ Heard: ' + transcript;
-        }
-
-        setTimeout(() => {
+          setTimeout(() => {
             sendMsg(tab);
-        }, 500);
+          }, 500);
 
-    } catch(err) {
-
-        console.error("VOICE RESULT ERROR:", err);
-
-    }
-
-};
-
-        statusEl.textContent = '✅ Heard: "' + transcript + '"';
-
-        isRecording = false;
-
-        setTimeout(() => {
-          sendMsg(tab);
-        }, 500);
+        } catch(err) {
+          console.error("VOICE RESULT ERROR:", err);
+          statusEl.textContent = '❌ Voice processing failed';
+        }
       };
+
       recognition.onerror = (e) => {
 
     console.error("VOICE ERROR:", e);
@@ -774,13 +815,13 @@ function toggleVoiceForTab(tab) {
 }
 
 function stopVoice() {
-  isRecording = false;
-
-  if (recognition && isRecording) {
+  if (recognition) {
     try {
-        recognition.stop();
+      recognition.stop();
     } catch(e) {}
-}
+  }
+
+  isRecording = false;
   const btns = ['voiceBtn','cryptoVoiceBtn','stocksVoiceBtn','sipVoiceBtn'];
 
   btns.forEach(id => {
