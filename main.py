@@ -547,7 +547,7 @@ async function loadLiveTicker() {
 
 loadLiveTicker();
 
-setInterval(loadLiveTicker, 30000);
+setInterval(loadLiveTicker, 120000);
 
 // ── Tab switching ──────────────────────────────────────────────────
 function switchTab(tab, btn) {
