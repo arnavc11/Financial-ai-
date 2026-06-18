@@ -1188,12 +1188,33 @@ async def crypto_prices():
             "&include_24hr_change=true"
         )
 
+        # synchronous request on purpose (keeps existing behavior)
         r = requests.get(url, timeout=10)
+
+        # 1) Print status code and response text preview
+        try:
+            print(f"CRYPTO API RESPONSE STATUS: {r.status_code}")
+            resp_text = r.text or ""
+            print("CRYPTO API RESPONSE TEXT (first 500 chars):")
+            print(resp_text[:500])
+        except Exception as _print_err:
+            # if printing fails for any reason, still continue
+            print("CRYPTO API RESPONSE PRINT ERROR:", str(_print_err))
 
         if r.status_code != 200:
             raise Exception("API failed")
 
+        # parse JSON
         data = r.json()
+
+        # 2) Print parsed JSON response before using it
+        try:
+            import json
+            print("CRYPTO API PARSED JSON RESPONSE:")
+            print(json.dumps(data, indent=2, ensure_ascii=False))
+        except Exception:
+            # fallback safe-print
+            print("CRYPTO API PARSED JSON (repr):", repr(data))
 
         btc = data.get("bitcoin", {})
         eth = data.get("ethereum", {})
@@ -1252,7 +1273,11 @@ async def crypto_prices():
 
     except Exception as e:
 
-        print("CRYPTO API ERROR:", e)
+        # 3) Print the full exception message and traceback
+        print("CRYPTO API ERROR:", str(e))
+        import traceback
+        print("CRYPTO API TRACEBACK:")
+        traceback.print_exc()
 
         return {
             "coins": [
