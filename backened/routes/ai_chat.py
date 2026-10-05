@@ -4,7 +4,7 @@ from typing import List, Optional
 import httpx
 from datetime import datetime
 from groq import Groq
-from backened.config.settings import config
+from config.settings import config
 
 router = APIRouter()
 

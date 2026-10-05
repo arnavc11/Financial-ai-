@@ -14,6 +14,12 @@ class TTLCache:
                 del self._store[key]
         return None
 
+
+    def get_stale(self, key: str) -> Optional[Any]:
+        if key in self._store:
+            return self._store[key][0]
+        return None
+
     def set(self, key: str, value: Any, ttl: int = 300):
         self._store[key] = (value, time.time() + ttl)
 

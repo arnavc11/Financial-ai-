@@ -13,5 +13,9 @@ class Config:
     ALPHA_VANTAGE_API_KEY: str = os.getenv("ALPHA_VANTAGE_API_KEY", "demo")
     USE_YFINANCE_FALLBACK: bool = True
     DATA_DIR: str = "data"
+    ALERT_CHECK_INTERVAL_SECONDS: int = 60
+    DATA_REFRESH_INTERVAL_SECONDS: int = 300
+    COINGECKO_BASE_URL: str = "https://api.coingecko.com/api/v3"
+    COINGECKO_API_KEY: str = ""
 
 config = Config()
