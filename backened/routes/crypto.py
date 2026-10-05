@@ -7,7 +7,7 @@ from backened.cache import cache
 
 router = APIRouter()
 
-BASE_URL = config.COINGECKO_BASE_URL
+BASE_URL = getattr(config, 'COINGECKO_BASE_URL', 'https://api.coingecko.com/api/v3')
 
 POPULAR_COINS = {
     "bitcoin": "Bitcoin",
@@ -86,6 +86,7 @@ async def get_crypto_prices(
                 })
 
         result = {
+            "status": "fresh",
             "coins": results,
             "count": len(results),
             "timestamp": datetime.now().isoformat()
@@ -95,6 +96,11 @@ async def get_crypto_prices(
         return result
 
     except httpx.HTTPError as e:
+        stale = cache.get_stale(cache_key)
+        if stale:
+            stale_copy = stale.copy()
+            stale_copy["status"] = "stale"
+            return stale_copy
         raise HTTPException(status_code=503, detail=f"CoinGecko API error: {str(e)}")
 
 @router.get("/coin/{coin_id}")

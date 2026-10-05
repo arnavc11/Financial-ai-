@@ -26,13 +26,13 @@ def get_db():
 def init_db():
     with get_db() as conn:
 
-        conn.execute("""
+        conn.executescript("""
             CREATE TABLE IF NOT EXISTS users (
                 id          TEXT PRIMARY KEY,        -- user_id e.g. "user_123"
                 name        TEXT,
                 email       TEXT UNIQUE,
                 created_at  TEXT DEFAULT (datetime('now'))
-            )
+            );
             CREATE TABLE IF NOT EXISTS portfolios (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id         TEXT NOT NULL,
@@ -40,7 +40,7 @@ def init_db():
                 created_at      TEXT DEFAULT (datetime('now')),
                 UNIQUE(user_id, portfolio_name),    -- same user can't have two same-named portfolios
                 FOREIGN KEY (user_id) REFERENCES users(id)
-            )
+            );
             CREATE TABLE IF NOT EXISTS holdings (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
                 portfolio_id    INTEGER NOT NULL,
@@ -54,7 +54,7 @@ def init_db():
                 notes           TEXT DEFAULT '',
                 added_at        TEXT DEFAULT (datetime('now')),
                 FOREIGN KEY (portfolio_id) REFERENCES portfolios(id)
-            )
+            );
             CREATE TABLE IF NOT EXISTS alerts (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id         TEXT NOT NULL,
@@ -69,7 +69,7 @@ def init_db():
                 created_at      TEXT DEFAULT (datetime('now')),
                 triggered_at    TEXT,               -- When it fired
                 triggered_price REAL                -- Price when it fired
-            )
+            );
             CREATE TABLE IF NOT EXISTS chat_history (
                 id          INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id     TEXT NOT NULL,
@@ -77,7 +77,7 @@ def init_db():
                 content     TEXT NOT NULL,
                 model_used  TEXT,                   -- which AI model replied
                 created_at  TEXT DEFAULT (datetime('now'))
-            )
+            );
             CREATE TABLE IF NOT EXISTS watchlist (
                 id          INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id     TEXT NOT NULL,
@@ -86,6 +86,7 @@ def init_db():
                 name        TEXT,
                 added_at    TEXT DEFAULT (datetime('now')),
                 UNIQUE(user_id, symbol, asset_type)
+            );
             """)
 def get_portfolios(user_id: str):
     """Creates a new portfolio. Returns the portfolio's database ID.
